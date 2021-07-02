@@ -10,14 +10,17 @@ namespace Avalara.AvaTax.RestClient
     /// <summary>
     /// Public interface to AvaTax client
     /// </summary>
-    public interface IAvaTaxClient
+    interface IAvaTaxClient
     {
+        #region Client
+
         /// <summary>
         /// Tracks the amount of time spent on the most recent API call
         /// </summary>
         CallDuration LastCallTime { get; set; }
 
         #region Security
+
         /// <summary>
         /// Sets the default security header string
         /// </summary>
@@ -44,9 +47,11 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="bearerToken"></param>
         /// <returns></returns>
         AvaTaxClient WithBearerToken(string bearerToken);
+
         #endregion
 
         #region Custom headers
+
         /// <summary>
         /// Add custom header to this client.
         /// </summary>
@@ -54,9 +59,11 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="value">Value of header.</param>
         /// <returns></returns>
         AvaTaxClient WithCustomHeader(string name, string value);
+
         #endregion
 
         #region Client Identification
+
         /// <summary>
         /// Configure client identification
         /// </summary>
@@ -65,9 +72,45 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="machineName"></param>
         /// <returns></returns>
         AvaTaxClient WithClientIdentifier(string appName, string appVersion, string machineName);
+
+        #endregion
+
+        #region REST Call Interface
+#if PORTABLE
+        /// <summary>
+        /// Implementation of asynchronous client APIs
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="verb"></param>
+        /// <param name="relativePath"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        Task<T> RestCallAsync<T>(string verb, AvaTaxPath relativePath, object content = null);
+
+
+        /// <summary>
+        /// Direct implementation of client APIs
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="verb"></param>
+        /// <param name="relativePath"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        T RestCall<T>(string verb, AvaTaxPath relativePath, object content = null);
+
+        /// <summary>
+        /// Non-async method for downloading a file
+        /// </summary>
+        /// <param name="verb"></param>
+        /// <param name="relativePath"></param>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        FileResult RestCallFile(string verb, AvaTaxPath relativePath, object payload = null);
+#endif
         #endregion
 
         #region Logging
+
         /// <summary>
         /// Hook this event to capture information about API calls
         /// </summary>
@@ -78,7 +121,12 @@ namespace Avalara.AvaTax.RestClient
         /// </summary>
         /// <param name="logFileName"></param>
         void LogToFile(string logFileName);
+
         #endregion
+
+        #endregion Client
+
+        #region API
 
         #region Methods
 
@@ -109,6 +157,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">A request confirming that you wish to reset the license key of this account.</param>
         LicenseKeyModel AccountResetLicenseKey(Int32 id, ResetLicenseKeyModel model);
 
+
         /// <summary>
         /// Activate an account by accepting terms and conditions
         /// </summary>
@@ -131,6 +180,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account to activate</param>
         /// <param name="model">The activation request</param>
         AccountModel ActivateAccount(Int32 id, ActivateAccountModel model);
+
 
         /// <summary>
         /// Retrieve audit history for an account.
@@ -162,6 +212,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         FetchResult<AuditModel> AuditAccount(Int32 id, DateTime? start, DateTime? end, Int32? top, Int32? skip);
 
+
         /// <summary>
         /// Create license key for this account
         /// </summary>
@@ -185,6 +236,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         LicenseKeyModel CreateLicenseKey(Int32 id, AccountLicenseKeyModel model);
 
+
         /// <summary>
         /// Delete license key for this account by license key name
         /// </summary>
@@ -203,6 +255,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="licensekeyname">The license key name you wish to update.</param>
         List<ErrorDetail> DeleteLicenseKey(Int32 id, String licensekeyname);
 
+
         /// <summary>
         /// Retrieve a single account
         /// </summary>
@@ -220,6 +273,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account to retrieve</param>
         /// <param name="include">A comma separated list of special fetch options</param>
         AccountModel GetAccount(Int32 id, String include);
+
 
         /// <summary>
         /// Get configuration settings for this account
@@ -245,6 +299,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         List<AccountConfigurationModel> GetAccountConfiguration(Int32 id);
 
+
         /// <summary>
         /// Retrieve license key by license key name
         /// </summary>
@@ -256,6 +311,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account to retrieve</param>
         /// <param name="licensekeyname">The ID of the account to retrieve</param>
         AccountLicenseKeyModel GetLicenseKey(Int32 id, String licensekeyname);
+
 
         /// <summary>
         /// Retrieve all license keys for this account
@@ -269,6 +325,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The ID of the account to retrieve</param>
         List<AccountLicenseKeyModel> GetLicenseKeys(Int32 id);
+
 
         /// <summary>
         /// Retrieve all accounts
@@ -298,6 +355,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<AccountModel> QueryAccounts(String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Change configuration settings for this account
         /// </summary>
@@ -322,6 +380,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         /// <param name="model"></param>
         List<AccountConfigurationModel> SetAccountConfiguration(Int32 id, List<AccountConfigurationModel> model);
+
 
         /// <summary>
         /// Retrieve geolocation information for a specified address
@@ -354,6 +413,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="textCase">selectable text case for address validation</param>
         AddressResolutionModel ResolveAddress(String line1, String line2, String line3, String city, String region, String postalCode, String country, TextCase? textCase);
 
+
         /// <summary>
         /// Retrieve geolocation information for a specified address
         /// </summary>
@@ -373,6 +433,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The address to resolve</param>
         AddressResolutionModel ResolveAddressPost(AddressValidationInfo model);
 
+
         /// <summary>
         /// Create a lookup file for a company
         /// </summary>
@@ -384,6 +445,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The lookup file you wish to create</param>
         AdvancedRuleLookupFileModel CreateCompanyLookupFile(Int32 accountId, Int32 companyId, AdvancedRuleLookupFileModel model);
 
+
         /// <summary>
         /// Delete a lookup file
         /// </summary>
@@ -393,6 +455,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account for the company the lookup file is for</param>
         /// <param name="id">The unique ID/GUID for the company lookup file to be deleted</param>
         List<ErrorDetail> DeleteLookupFile(Int32 accountId, String id);
+
 
         /// <summary>
         /// Get the lookup files for a company
@@ -404,6 +467,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company for which to retrieve lookup files</param>
         FetchResult<AdvancedRuleLookupFileModel> GetCompanyLookupFiles(Int32 accountId, Int32 companyId);
 
+
         /// <summary>
         /// Get a lookup file for an accountId and companyLookupFileId
         /// </summary>
@@ -413,6 +477,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account for the lookup file</param>
         /// <param name="id">The unique ID/GUID of the company lookup file to return</param>
         AdvancedRuleLookupFileModel GetLookupFile(Int32 accountId, String id);
+
 
         /// <summary>
         /// Update a lookup file
@@ -424,6 +489,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID/GUID of the company lookup file to be updated</param>
         /// <param name="model">The new values to update the lookup file</param>
         AdvancedRuleLookupFileModel UpdateLookupFile(Int32 accountId, String id, AdvancedRuleLookupFileModel model);
+
 
         /// <summary>
         /// Create a new AvaFileForm
@@ -440,6 +506,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The AvaFileForm you wish to create.</param>
         List<AvaFileFormModel> CreateAvaFileForms(List<AvaFileFormModel> model);
 
+
         /// <summary>
         /// Delete a single AvaFileForm
         /// </summary>
@@ -454,6 +521,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the AvaFileForm you wish to delete.</param>
         List<ErrorDetail> DeleteAvaFileForm(Int32 id);
 
+
         /// <summary>
         /// Retrieve a single AvaFileForm
         /// </summary>
@@ -467,6 +535,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The primary key of this AvaFileForm</param>
         AvaFileFormModel GetAvaFileForm(Int32 id);
+
 
         /// <summary>
         /// Retrieve all AvaFileForms
@@ -486,6 +555,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<AvaFileFormModel> QueryAvaFileForms(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a AvaFileForm
         /// </summary>
@@ -501,6 +571,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the AvaFileForm you wish to update</param>
         /// <param name="model">The AvaFileForm model you wish to update.</param>
         AvaFileFormModel UpdateAvaFileForm(Int32 id, AvaFileFormModel model);
+
 
         /// <summary>
         /// Cancel an in progress batch
@@ -526,6 +597,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this batch.</param>
         /// <param name="id">The ID of the batch to cancel.</param>
         BatchModel CancelBatch(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Create a new batch
@@ -559,6 +631,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The batch you wish to create.</param>
         List<BatchModel> CreateBatches(Int32 companyId, List<BatchModel> model);
 
+
         /// <summary>
         /// Create a new transaction batch
         /// </summary>
@@ -589,6 +662,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The transaction batch you wish to create.</param>
         CreateTransactionBatchResponseModel CreateTransactionBatch(Int32 companyId, CreateTransactionBatchRequestModel model);
 
+
         /// <summary>
         /// Delete a single batch
         /// </summary>
@@ -612,6 +686,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the batch to delete.</param>
         List<ErrorDetail> DeleteBatch(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Download a single batch file
         /// </summary>
@@ -626,6 +701,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="batchId">The ID of the batch object</param>
         /// <param name="id">The primary key of this batch file object</param>
         FileResult DownloadBatch(Int32 companyId, Int32 batchId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single batch
@@ -654,6 +730,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this batch</param>
         /// <param name="id">The primary key of this batch</param>
         BatchModel GetBatch(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve all batches for this company
@@ -693,6 +770,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<BatchModel> ListBatchesByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all batches
         /// </summary>
@@ -727,6 +805,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<BatchModel> QueryBatches(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Create a CertExpress invitation
         /// </summary>
@@ -756,6 +835,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="customerCode">The number of the customer where the request is sent to</param>
         /// <param name="model">the requests to send out to customers</param>
         List<CertExpressInvitationStatusModel> CreateCertExpressInvitation(Int32 companyId, String customerCode, List<CreateCertExpressInvitationModel> model);
+
 
         /// <summary>
         /// Retrieve a single CertExpress invitation
@@ -787,6 +867,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this CertExpress invitation</param>
         /// <param name="include">OPTIONAL: A comma separated list of special fetch options. No options are defined at this time.</param>
         CertExpressInvitationModel GetCertExpressInvitation(Int32 companyId, String customerCode, Int32 id, String include);
+
 
         /// <summary>
         /// List CertExpress invitations
@@ -822,6 +903,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CertExpressInvitationModel> ListCertExpressInvitations(Int32 companyId, String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Create certificates for this company
@@ -859,6 +941,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Certificates to be created</param>
         List<CertificateModel> CreateCertificates(Int32 companyId, Boolean? preValidatedExemptionReason, List<CertificateModel> model);
 
+
         /// <summary>
         /// Revoke and delete a certificate
         /// </summary>
@@ -885,6 +968,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded this certificate</param>
         /// <param name="id">The unique ID number of this certificate</param>
         List<ErrorDetail> DeleteCertificate(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Download an image for this certificate
@@ -915,6 +999,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="page">If you choose `$type`=`Jpeg`, you must specify which page number to retrieve.</param>
         /// <param name="type">The data format in which to retrieve the certificate image</param>
         FileResult DownloadCertificateImage(Int32 companyId, Int32 id, Int32? page, CertificatePreviewType? type);
+
 
         /// <summary>
         /// Retrieve a single certificate
@@ -952,6 +1037,7 @@ namespace Avalara.AvaTax.RestClient
         ///  * attributes - Retrieves all attributes applied to the certificate.</param>
         CertificateModel GetCertificate(Int32 companyId, Int32 id, String include);
 
+
         /// <summary>
         /// Check a company's exemption certificate status.
         /// </summary>
@@ -971,6 +1057,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId">The company ID to check</param>
         ProvisionStatusModel GetCertificateSetup(Int32 companyId);
+
 
         /// <summary>
         /// Link attributes to a certificate
@@ -1000,6 +1087,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="model">The list of attributes to link to this certificate.</param>
         FetchResult<CertificateAttributeModel> LinkAttributesToCertificate(Int32 companyId, Int32 id, List<CertificateAttributeModel> model);
+
 
         /// <summary>
         /// Link customers to a certificate
@@ -1031,6 +1119,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of customers needed be added to the Certificate for exemption</param>
         FetchResult<CustomerModel> LinkCustomersToCertificate(Int32 companyId, Int32 id, LinkCustomersModel model);
 
+
         /// <summary>
         /// List all attributes applied to this certificate
         /// </summary>
@@ -1058,6 +1147,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded this certificate</param>
         /// <param name="id">The unique ID number of this certificate</param>
         FetchResult<CertificateAttributeModel> ListAttributesForCertificate(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// List customers linked to this certificate
@@ -1088,6 +1178,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">OPTIONAL: A comma separated list of special fetch options.
         ///  No options are currently available when fetching customers.</param>
         FetchResult<CustomerModel> ListCustomersForCertificate(Int32 companyId, Int32 id, String include);
+
 
         /// <summary>
         /// List all certificates for a company
@@ -1128,6 +1219,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CertificateModel> QueryCertificates(Int32 companyId, String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Request setup of exemption certificates for this company.
         /// </summary>
@@ -1149,6 +1241,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId"></param>
         ProvisionStatusModel RequestCertificateSetup(Int32 companyId);
+
 
         /// <summary>
         /// Unlink attributes from a certificate
@@ -1178,6 +1271,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="model">The list of attributes to unlink from this certificate.</param>
         FetchResult<CertificateAttributeModel> UnlinkAttributesFromCertificate(Int32 companyId, Int32 id, List<CertificateAttributeModel> model);
+
 
         /// <summary>
         /// Unlink customers from a certificate
@@ -1210,6 +1304,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of customers to unlink from this certificate</param>
         FetchResult<CustomerModel> UnlinkCustomersFromCertificate(Int32 companyId, Int32 id, LinkCustomersModel model);
 
+
         /// <summary>
         /// Update a single certificate
         /// </summary>
@@ -1235,6 +1330,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="model">The new certificate object that will replace the existing one</param>
         CertificateModel UpdateCertificate(Int32 companyId, Int32 id, CertificateModel model);
+
 
         /// <summary>
         /// Upload an image or PDF attachment for this certificate
@@ -1264,6 +1360,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="file">The exemption certificate file you wanted to upload. Accepted formats are: PDF, JPEG, TIFF, PNG.</param>
         String UploadCertificateImage(Int32 companyId, Int32 id, FileResult file);
+
 
         /// <summary>
         /// Checks whether the integration being used to set up this company and run transactions onto this company is compliant to all requirements.
@@ -1300,6 +1397,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the company to check if its integration is certified.</param>
         String CertifyIntegration(Int32 id);
 
+
         /// <summary>
         /// Change the filing status of this company
         /// </summary>
@@ -1326,6 +1424,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         String ChangeFilingStatus(Int32 id, FilingStatusChangeModel model);
 
+
         /// <summary>
         /// Quick setup for a company with a single physical address
         /// </summary>
@@ -1350,6 +1449,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the company you wish to create.</param>
         CompanyModel CompanyInitialize(CompanyInitializationModel model);
 
+
         /// <summary>
         /// Create new companies
         /// </summary>
@@ -1366,6 +1466,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Either a single company object or an array of companies to create</param>
         List<CompanyModel> CreateCompanies(List<CompanyModel> model);
+
 
         /// <summary>
         /// Add parameters to a company.
@@ -1391,6 +1492,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The company parameters you wish to create.</param>
         List<CompanyParameterDetailModel> CreateCompanyParameters(Int32 companyId, List<CompanyParameterDetailModel> model);
 
+
         /// <summary>
         /// Request managed returns funding setup for a company
         /// </summary>
@@ -1415,6 +1517,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The funding initialization request</param>
         FundingStatusModel CreateFundingRequest(Int32 id, FundingInitiateModel model);
 
+
         /// <summary>
         /// Delete a single company
         /// </summary>
@@ -1427,6 +1530,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The ID of the company you wish to delete.</param>
         List<ErrorDetail> DeleteCompany(Int32 id);
+
 
         /// <summary>
         /// Delete a single company parameter
@@ -1447,6 +1551,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The parameter id</param>
         List<ErrorDetail> DeleteCompanyParameter(Int32 companyId, Int64 id);
 
+
         /// <summary>
         /// Check the funding configuration of a company
         /// </summary>
@@ -1463,6 +1568,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId">The unique identifier of the company</param>
         FundingConfigurationModel FundingConfigurationByCompany(Int32 companyId);
+
 
         /// <summary>
         /// Check the funding configuration of a company
@@ -1481,6 +1587,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique identifier of the company</param>
         /// <param name="currency">The currency of the funding. USD and CAD are the only valid currencies</param>
         List<FundingConfigurationModel> FundingConfigurationsByCompanyAndCurrency(Int32 companyId, String currency);
+
 
         /// <summary>
         /// Retrieve a single company
@@ -1511,6 +1618,7 @@ namespace Avalara.AvaTax.RestClient
         ///  * Deleted objects - Specify "FetchDeleted" to retrieve information about previously deleted objects.</param>
         CompanyModel GetCompany(Int32 id, String include);
 
+
         /// <summary>
         /// Get configuration settings for this company
         /// </summary>
@@ -1535,6 +1643,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         List<CompanyConfigurationModel> GetCompanyConfiguration(Int32 id);
 
+
         /// <summary>
         /// Retrieve a single company parameter
         /// </summary>
@@ -1555,6 +1664,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         CompanyParameterDetailModel GetCompanyParameterDetail(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Get this company's filing status
         /// </summary>
@@ -1572,6 +1682,7 @@ namespace Avalara.AvaTax.RestClient
         /// * `FilingRequested` - The company has requested to begin filing tax returns, but Avalara's compliance team has not yet begun filing.
         /// * `FirstFiling` - The company has recently filing tax returns and is in a new status.
         /// * `Active` - The company is currently active and is filing tax returns via Avalara Managed Returns.
+        /// * `Inactive` - The company is currently inactive.
         /// 
         /// ### Security Policies
         /// 
@@ -1579,6 +1690,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         String GetFilingStatus(Int32 id);
+
 
         /// <summary>
         /// Retrieve parameters for a company
@@ -1606,6 +1718,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CompanyParameterDetailModel> ListCompanyParameterDetails(Int32 companyId, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Check managed returns funding status for a company
         /// </summary>
@@ -1623,6 +1736,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique identifier of the company</param>
         List<FundingStatusModel> ListFundingRequestsByCompany(Int32 id);
 
+
         /// <summary>
         /// Retrieve a list of MRS Companies with account
         /// </summary>
@@ -1636,6 +1750,7 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountOperator, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, Registrar, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
         /// </remarks>
         FetchResult<MrsCompanyModel> ListMrsCompanies();
+
 
         /// <summary>
         /// Retrieve all companies
@@ -1670,6 +1785,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CompanyModel> QueryCompanies(String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Change configuration settings for this company
         /// </summary>
@@ -1695,6 +1811,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         List<CompanyConfigurationModel> SetCompanyConfiguration(Int32 id, List<CompanyConfigurationModel> model);
 
+
         /// <summary>
         /// Update a single company
         /// </summary>
@@ -1719,6 +1836,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The company object you wish to update.</param>
         CompanyModel UpdateCompany(Int32 id, CompanyModel model);
 
+
         /// <summary>
         /// Update a company parameter
         /// </summary>
@@ -1740,15 +1858,6 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The company parameter object you wish to update.</param>
         CompanyParameterDetailModel UpdateCompanyParameterDetail(Int32 companyId, Int64 id, CompanyParameterDetailModel model);
 
-        /// <summary>
-        /// API to modify the reference fields at the document and the line level.
-        /// </summary>
-        /// <remarks>
-        /// 
-        /// </remarks>
-        /// <param name="companyId"></param>
-        /// <param name="model"></param>
-        FetchResult<TransactionModel> TagTransaction(Int32 companyId, List<TransactionReferenceFieldModel> model);
 
         /// <summary>
         /// Create a new contact
@@ -1766,6 +1875,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The contacts you wish to create.</param>
         List<ContactModel> CreateContacts(Int32 companyId, List<ContactModel> model);
 
+
         /// <summary>
         /// Delete a single contact
         /// </summary>
@@ -1779,6 +1889,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this contact.</param>
         /// <param name="id">The ID of the contact you wish to delete.</param>
         List<ErrorDetail> DeleteContact(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single contact
@@ -1795,6 +1906,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company for this contact</param>
         /// <param name="id">The primary key of this contact</param>
         ContactModel GetContact(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve contacts for this company
@@ -1815,6 +1927,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ContactModel> ListContactsByCompany(Int32 companyId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all contacts
@@ -1837,6 +1950,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ContactModel> QueryContacts(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single contact
         /// </summary>
@@ -1855,6 +1969,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the contact you wish to update</param>
         /// <param name="model">The contact you wish to update.</param>
         ContactModel UpdateContact(Int32 companyId, Int32 id, ContactModel model);
+
 
         /// <summary>
         /// Create customers for this company
@@ -1885,6 +2000,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of customer objects to be created</param>
         List<CustomerModel> CreateCustomers(Int32 companyId, List<CustomerModel> model);
 
+
         /// <summary>
         /// Delete a customer record
         /// </summary>
@@ -1910,6 +2026,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded this customer</param>
         /// <param name="customerCode">The unique code representing this customer</param>
         CustomerModel DeleteCustomer(Int32 companyId, String customerCode);
+
 
         /// <summary>
         /// Retrieve a single customer
@@ -1944,6 +2061,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specify optional additional objects to include in this fetch request</param>
         CustomerModel GetCustomer(Int32 companyId, String customerCode, String include);
 
+
         /// <summary>
         /// Link attributes to a customer
         /// </summary>
@@ -1974,6 +2092,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of attributes to link to the customer.</param>
         FetchResult<CustomerAttributeModel> LinkAttributesToCustomer(Int32 companyId, String customerCode, List<CustomerAttributeModel> model);
 
+
         /// <summary>
         /// Link certificates to a customer
         /// </summary>
@@ -2000,6 +2119,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="customerCode">The unique code representing this customer</param>
         /// <param name="model">The list of certificates to link to this customer</param>
         FetchResult<CertificateModel> LinkCertificatesToCustomer(Int32 companyId, String customerCode, LinkCertificatesModel model);
+
 
         /// <summary>
         /// Link two customer records together
@@ -2029,6 +2149,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">A list of information about ship-to customers to link to this bill-to customer.</param>
         CustomerModel LinkShipToCustomersToBillCustomer(Int32 companyId, String code, LinkCustomersModel model);
 
+
         /// <summary>
         /// Retrieve a customer's attributes
         /// </summary>
@@ -2057,6 +2178,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded the provided customer</param>
         /// <param name="customerCode">The unique code representing the current customer</param>
         FetchResult<CustomerAttributeModel> ListAttributesForCustomer(Int32 companyId, String customerCode);
+
 
         /// <summary>
         /// List certificates linked to a customer
@@ -2093,6 +2215,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CertificateModel> ListCertificatesForCustomer(Int32 companyId, String customerCode, String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List valid certificates for a location
         /// </summary>
@@ -2123,6 +2246,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="country">Search for certificates matching this country. Uses the ISO 3166 two character country code.</param>
         /// <param name="region">Search for certificates matching this region. Uses the ISO 3166 two or three character state, region, or province code.</param>
         ExemptionStatusModel ListValidCertificatesForCustomer(Int32 companyId, String customerCode, String country, String region);
+
 
         /// <summary>
         /// List all customers for this company
@@ -2159,6 +2283,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CustomerModel> QueryCustomers(Int32 companyId, String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Unlink attributes from a customer
         /// </summary>
@@ -2189,6 +2314,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of attributes to unlink from the customer.</param>
         FetchResult<CustomerAttributeModel> UnlinkAttributesFromCustomer(Int32 companyId, String customerCode, List<CustomerAttributeModel> model);
 
+
         /// <summary>
         /// Unlink certificates from a customer
         /// </summary>
@@ -2215,6 +2341,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="customerCode">The unique code representing this customer</param>
         /// <param name="model">The list of certificates to link to this customer</param>
         FetchResult<CertificateModel> UnlinkCertificatesFromCustomer(Int32 companyId, String customerCode, LinkCertificatesModel model);
+
 
         /// <summary>
         /// Update a single customer
@@ -2243,6 +2370,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The new customer model that will replace the existing record at this URL</param>
         CustomerModel UpdateCustomer(Int32 companyId, String customerCode, CustomerModel model);
 
+
         /// <summary>
         /// Create and store new datasources for the respective companies.
         /// </summary>
@@ -2257,6 +2385,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The id of the company you which to create the datasources</param>
         /// <param name="model"></param>
         List<DataSourceModel> CreateDataSources(Int32 companyId, List<DataSourceModel> model);
+
 
         /// <summary>
         /// Delete a datasource by datasource id for a company.
@@ -2273,6 +2402,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the datasource you wish to delete.</param>
         List<ErrorDetail> DeleteDataSource(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Get data source by data source id
         /// </summary>
@@ -2287,6 +2417,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId"></param>
         /// <param name="id">data source id</param>
         DataSourceModel GetDataSourceById(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve all datasources for this company
@@ -2305,6 +2436,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<DataSourceModel> ListDataSources(Int32 companyId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all datasources
@@ -2326,6 +2458,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<DataSourceModel> QueryDataSources(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a datasource identified by id for a company
         /// </summary>
@@ -2341,6 +2474,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the datasource you wish to delete.</param>
         /// <param name="model"></param>
         DataSourceModel UpdateDataSource(Int32 companyId, Int32 id, DataSourceModel model);
+
 
         /// <summary>
         /// Lists all parents of an HS Code.
@@ -2365,6 +2499,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="hsCode">The partial or full HS Code for which you would like to view all of the parents.</param>
         FetchResult<HsCodeModel> GetCrossBorderCode(String country, String hsCode);
 
+
         /// <summary>
         /// Test whether a form supports online login verification
         /// </summary>
@@ -2378,6 +2513,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SkyscraperStatusModel> GetLoginVerifierByForm(String form, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of the AvaFile Forms available
@@ -2395,6 +2531,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<AvaFileFormModel> ListAvaFileForms(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List certificate attributes used by a company
@@ -2415,6 +2552,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CertificateAttributeModel> ListCertificateAttributes(Int32? companyid, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List the certificate exempt reasons defined by a company
         /// </summary>
@@ -2432,6 +2570,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ExemptionReasonModel> ListCertificateExemptReasons(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List certificate exposure zones used by a company
@@ -2451,6 +2590,22 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ExposureZoneModel> ListCertificateExposureZones(String filter, Int32? top, Int32? skip, String orderBy);
 
+
+        /// <summary>
+        /// Retrieve the full list of Avalara-supported usage of extra parameters for classification of a item.
+        /// </summary>
+        /// <remarks>
+        /// Returns the full list of Avalara-supported usage of extra parameters for item classification.
+        /// The list of parameters is available for use with Item Classification.
+        /// Some parameters are only available for use if you have subscribed to certain features of AvaTax.
+        /// </remarks>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* values</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        FetchResult<ClassificationParameterUsageMapModel> ListClassificationParametersUsage(String filter, Int32? top, Int32? skip, String orderBy);
+
+
         /// <summary>
         /// Retrieve the full list of communications service types
         /// </summary>
@@ -2463,6 +2618,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CommunicationsTSPairModel> ListCommunicationsServiceTypes(Int32 id, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of communications transactiontypes
@@ -2477,6 +2633,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CommunicationsTransactionTypeModel> ListCommunicationsTransactionTypes(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of communications transaction/service type pairs
         /// </summary>
@@ -2489,6 +2646,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CommunicationsTSPairModel> ListCommunicationsTSPairs(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all ISO 3166 countries
@@ -2503,6 +2661,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<IsoCountryModel> ListCountries(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List certificate exposure zones used by a company
@@ -2522,6 +2681,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CoverLetterModel> ListCoverLetters(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Lists the next level of HS Codes given a destination country and HS Code prefix.
@@ -2548,6 +2708,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<HsCodeModel> ListCrossBorderCodes(String country, String hsCode, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List top level HS Code Sections.
         /// </summary>
@@ -2565,6 +2726,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         FetchResult<HsCodeModel> ListCrossBorderSections();
 
+
         /// <summary>
         /// List all ISO 4217 currencies supported by AvaTax.
         /// </summary>
@@ -2579,6 +2741,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CurrencyModel> ListCurrencies(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported entity use codes
@@ -2596,6 +2759,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<EntityUseCodeModel> ListEntityUseCodes(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported filing frequencies.
         /// </summary>
@@ -2608,6 +2772,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<FilingFrequencyModel> ListFilingFrequencies(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List jurisdictions based on the filter provided
@@ -2625,6 +2790,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<JurisdictionModel> ListJurisdictions(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List jurisdictions near a specific address
@@ -2650,6 +2816,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<JurisdictionOverrideModel> ListJurisdictionsByAddress(String line1, String line2, String line3, String city, String region, String postalCode, String country, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the list of questions that are required for a tax location
@@ -2677,6 +2844,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<LocationQuestionModel> ListLocationQuestionsByAddress(String line1, String line2, String line3, String city, String region, String postalCode, String country, Decimal? latitude, Decimal? longitude, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all forms where logins can be verified automatically
         /// </summary>
@@ -2691,6 +2859,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SkyscraperStatusModel> ListLoginVerifiers(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the list of locations for a marketplace.
         /// </summary>
@@ -2702,6 +2871,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<MarketplaceLocationModel> ListMarketplaceLocations(String marketplaceId, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported nexus for all countries and regions.
@@ -2716,6 +2886,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusModel> ListNexus(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all nexus that apply to a specific address.
@@ -2755,6 +2926,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusModel> ListNexusByAddress(String line1, String line2, String line3, String city, String region, String postalCode, String country, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported nexus for a country.
         /// </summary>
@@ -2769,6 +2941,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusModel> ListNexusByCountry(String country, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported nexus for a country and region.
@@ -2785,6 +2958,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusModel> ListNexusByCountryAndRegion(String country, String region, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List nexus related to a tax form
@@ -2809,6 +2983,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="formCode">The form code that we are looking up the nexus for</param>
         NexusByTaxFormModel ListNexusByFormCode(String formCode);
 
+
         /// <summary>
         /// Retrieve the full list of nexus tax type groups
         /// </summary>
@@ -2821,6 +2996,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusTaxTypeGroupModel> ListNexusTaxTypeGroups(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice customer funding options.
@@ -2835,6 +3011,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeCustomerFundingOptionModel> ListNoticeCustomerFundingOptions(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice customer types.
         /// </summary>
@@ -2847,6 +3024,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeCustomerTypeModel> ListNoticeCustomerTypes(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice filing types.
@@ -2861,6 +3039,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeFilingTypeModel> ListNoticeFilingtypes(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice priorities.
         /// </summary>
@@ -2873,6 +3052,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticePriorityModel> ListNoticePriorities(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice reasons.
@@ -2887,6 +3067,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeReasonModel> ListNoticeReasons(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice responsibility ids
         /// </summary>
@@ -2899,6 +3080,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeResponsibilityModel> ListNoticeResponsibilities(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice root causes
@@ -2913,6 +3095,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeRootCauseModel> ListNoticeRootCauses(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice statuses.
         /// </summary>
@@ -2926,6 +3109,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeStatusModel> ListNoticeStatuses(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice types.
         /// </summary>
@@ -2938,6 +3122,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NoticeTypeModel> ListNoticeTypes(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported extra parameters for creating transactions.
@@ -2953,11 +3138,21 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ParameterModel> ListParameters(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the parameters by companyCode and itemCode.
         /// </summary>
         /// <remarks>
-        /// Returns the list of parameters based on the company country and state jurisdiction and the item code.
+        /// Returns the list of parameters based on the company's service types and the item code.
+        /// Ignores nexus if a service type is configured in the 'IgnoreNexusForServiceTypes' configuration section.
+        /// Ignores nexus for the AvaAlcohol service type.
+        ///  
+        /// NOTE: If your company code or item code contains any of these characters /, +, ? or a space, please use the following encoding before making a request:
+        /// * Replace '/' with '\_-ava2f-\_' For example: 'Company/Code' becomes 'Company_-ava2f-_Code'
+        /// * Replace '+' with '\_-ava2b-\_' For example: 'Company+Code' becomes 'Company_-ava2b-_Code'
+        /// * Replace '?' with '\_-ava3f-\_' For example: 'Company?Code' becomes 'Company_-ava3f-_Code'
+        /// * Replace '%' with '\_-ava25-\_' For example: 'Company%Code' becomes 'Company_-ava25-_Code'
+        /// * Replace '#' with '\_-ava23-\_' For example: 'Company#Code' becomes 'Company_-ava23-_Code'
         /// 
         /// ### Security Policies
         /// 
@@ -2970,6 +3165,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ParameterModel> ListParametersByItem(String companyCode, String itemCode, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported usage of extra parameters for creating transactions.
@@ -2985,6 +3181,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ParameterUsageModel> ListParametersUsage(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported permissions
         /// </summary>
@@ -2995,6 +3192,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         FetchResult<String> ListPermissions(Int32? top, Int32? skip);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported postal codes.
@@ -3007,6 +3205,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<PostalCodeModel> ListPostalCodes(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all customs duty programs recognized by AvaTax
@@ -3028,6 +3227,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<PreferredProgramModel> ListPreferredPrograms(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all available product classification systems.
         /// </summary>
@@ -3044,6 +3244,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="countryCode">If not null, return all records with this code.</param>
         FetchResult<ProductClassificationSystemModel> ListProductClassificationSystems(String filter, Int32? top, Int32? skip, String orderBy, String countryCode);
 
+
         /// <summary>
         /// List all product classification systems available to a company based on its nexus.
         /// </summary>
@@ -3052,6 +3253,14 @@ namespace Avalara.AvaTax.RestClient
         ///  
         /// Tax authorities use product classification systems as a way to identify products and associate them with a tax rate.
         /// More than one tax authority might use the same product classification system, but they might charge different tax rates for products.
+        ///  
+        ///  
+        /// NOTE: If your company code contains any of these characters /, +, ? or a space, please use the following encoding before making a request:
+        /// * Replace '/' with '\_-ava2f-\_' For example: 'Company/Code' becomes 'Company_-ava2f-_Code'
+        /// * Replace '+' with '\_-ava2b-\_' For example: 'Company+Code' becomes 'Company_-ava2b-_Code'
+        /// * Replace '?' with '\_-ava3f-\_' For example: 'Company?Code' becomes 'Company_-ava3f-_Code'
+        /// * Replace '%' with '\_-ava25-\_' For example: 'Company%Code' becomes 'Company_-ava25-_Code'
+        /// * Replace '#' with '\_-ava23-\_' For example: 'Company#Code' becomes 'Company_-ava23-_Code'
         /// </remarks>
         /// <param name="companyCode">The company code.</param>
         /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* countries</param>
@@ -3060,6 +3269,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         /// <param name="countryCode">If not null, return all records with this code.</param>
         FetchResult<ProductClassificationSystemModel> ListProductClassificationSystemsByCompany(String companyCode, String filter, Int32? top, Int32? skip, String orderBy, String countryCode);
+
 
         /// <summary>
         /// Retrieve the full list of rate types for each country
@@ -3075,6 +3285,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<RateTypeModel> ListRateTypesByCountry(String country, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all ISO 3166 regions
         /// </summary>
@@ -3088,6 +3299,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<IsoRegionModel> ListRegions(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all ISO 3166 regions for a country
@@ -3104,6 +3316,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<IsoRegionModel> ListRegionsByCountry(String country, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported resource file types
         /// </summary>
@@ -3116,6 +3329,22 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ResourceFileTypeModel> ListResourceFileTypes(String filter, Int32? top, Int32? skip, String orderBy);
+
+
+        /// <summary>
+        /// Retrieve the full list of Avalara-supported usage of parameters used for returns.
+        /// </summary>
+        /// <remarks>
+        /// Returns the full list of Avalara-supported usage of extra parameters for the returns.
+        /// This list of parameters is available for use with Returns.
+        /// Some parameters are only available for use if you have subscribed to certain features of AvaTax.
+        /// </remarks>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* values</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        FetchResult<ReturnsParameterUsageModel> ListReturnsParametersUsage(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported permissions
@@ -3130,6 +3359,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SecurityRoleModel> ListSecurityRoles(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported subscription types
@@ -3146,6 +3376,20 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SubscriptionTypeModel> ListSubscriptionTypes(String filter, Int32? top, Int32? skip, String orderBy);
 
+
+        /// <summary>
+        /// Retrieve the list all tags supported by avalara
+        /// </summary>
+        /// <remarks>
+        /// Retrieves the list of suggested locations for a marketplace.
+        /// </remarks>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        FetchResult<TagsModel> ListTags(String filter, Int32? top, Int32? skip, String orderBy);
+
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax authorities.
         /// </summary>
@@ -3158,6 +3402,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxAuthorityModel> ListTaxAuthorities(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported forms for each tax authority.
@@ -3174,6 +3419,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxAuthorityFormModel> ListTaxAuthorityForms(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax authority types.
         /// </summary>
@@ -3186,6 +3432,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxAuthorityTypeModel> ListTaxAuthorityTypes(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax codes.
@@ -3207,6 +3454,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxCodeModel> ListTaxCodes(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax code types.
         /// </summary>
@@ -3218,6 +3466,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         TaxCodeTypesModel ListTaxCodeTypes(Int32? top, Int32? skip);
+
 
         /// <summary>
         /// Retrieve the full list of the Tax Forms available
@@ -3232,6 +3481,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<FormMasterModel> ListTaxForms(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of tax sub types
         /// </summary>
@@ -3244,6 +3494,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxSubTypeModel> ListTaxSubTypes(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of tax type groups
@@ -3258,6 +3509,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxTypeGroupModel> ListTaxTypeGroups(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all defined units of measurement
         /// </summary>
@@ -3271,6 +3523,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<UomModel> ListUnitOfMeasurement(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Create one or more DistanceThreshold objects
@@ -3290,6 +3543,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The DistanceThreshold object or objects you wish to create.</param>
         List<CompanyDistanceThresholdModel> CreateDistanceThreshold(Int32 companyId, List<CompanyDistanceThresholdModel> model);
 
+
         /// <summary>
         /// Delete a single DistanceThreshold object
         /// </summary>
@@ -3308,6 +3562,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of the DistanceThreshold object you wish to delete.</param>
         List<ErrorDetail> DeleteDistanceThreshold(Int32 companyId, Int64 id);
 
+
         /// <summary>
         /// Retrieve a single DistanceThreshold
         /// </summary>
@@ -3325,6 +3580,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this DistanceThreshold object</param>
         /// <param name="id">The unique ID number referring to this DistanceThreshold object</param>
         CompanyDistanceThresholdModel GetDistanceThreshold(Int32 companyId, Int64 id);
+
 
         /// <summary>
         /// Retrieve all DistanceThresholds for this company.
@@ -3347,6 +3603,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CompanyDistanceThresholdModel> ListDistanceThresholds(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all DistanceThreshold objects
@@ -3372,6 +3629,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<CompanyDistanceThresholdModel> QueryDistanceThresholds(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a DistanceThreshold object
         /// </summary>
@@ -3394,6 +3652,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The new DistanceThreshold object to store.</param>
         CompanyDistanceThresholdModel UpdateDistanceThreshold(Int32 companyId, Int64 id, CompanyDistanceThresholdModel model);
 
+
         /// <summary>
         /// Create a new eCommerce token.
         /// </summary>
@@ -3409,6 +3668,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The company ID that will be issued this certificate.</param>
         /// <param name="model"></param>
         ECommerceTokenOutputModel CreateECommerceToken(Int32 companyId, CreateECommerceTokenInputModel model);
+
 
         /// <summary>
         /// Refresh an eCommerce token.
@@ -3426,6 +3686,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         FetchResult<ECommerceTokenOutputModel> RefreshECommerceToken(Int32 companyId, RefreshECommerceTokenInputModel model);
 
+
         /// <summary>
         /// Add or Edit options
         /// </summary>
@@ -3442,6 +3703,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Cycle Safe Options Request</param>
         CycleSafeOptionResultModel CycleSafeOptions(Int32 companyId, CycleSafeEditRequestModel model);
 
+
         /// <summary>
         /// Delete a company return setting
         /// </summary>
@@ -3457,6 +3719,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyReturnSettingId">The unique ID of the company return setting that will be deleted from the filing calendar</param>
         List<CompanyReturnSettingModel> DeleteCompanyReturnSettings(Int32 companyId, Int32 filingCalendarId, Int64 companyReturnSettingId);
 
+
         /// <summary>
         /// Retrieve a filing containing the return and all its accrual returns.
         /// </summary>
@@ -3468,6 +3731,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns these returns</param>
         /// <param name="filingReturnId">The ID of the filing return</param>
         FetchResult<MultiTaxFilingModel> GetAccrualFilings(Int32 companyId, Int64 filingReturnId);
+
 
         /// <summary>
         /// Retrieve a list of filed returns for the specified company in the year and month of a given filing period.
@@ -3490,6 +3754,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="taxformCode">The unique tax form code of the form.</param>
         FetchResult<FiledReturnModel> GetFiledReturns(Int32 companyId, Int32? endPeriodMonth, Int32? endPeriodYear, FilingFrequencyId? frequency, FilingStatusId? status, String country, String region, Int64? filingCalendarId, String taxformCode);
 
+
         /// <summary>
         /// Approves linkage to a firm for a client account
         /// </summary>
@@ -3502,6 +3767,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         FirmClientLinkageOutputModel ApproveFirmClientLinkage(Int32 id);
+
 
         /// <summary>
         /// Request a new FirmClient account and create an approved linkage to it
@@ -3525,6 +3791,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the account you wish to create.</param>
         FirmClientLinkageOutputModel CreateAndLinkNewFirmClientAccount(NewFirmClientAccountRequestModel model);
 
+
         /// <summary>
         /// Links a firm account with the client account
         /// </summary>
@@ -3537,6 +3804,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">FirmClientLinkageInputModel</param>
         FirmClientLinkageOutputModel CreateFirmClientLinkage(FirmClientLinkageInputModel model);
+
 
         /// <summary>
         /// Delete a linkage
@@ -3551,6 +3819,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         List<ErrorDetail> DeleteFirmClientLinkage(Int32 id);
 
+
         /// <summary>
         /// Get linkage between a firm and client by id
         /// </summary>
@@ -3563,6 +3832,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         FirmClientLinkageOutputModel GetFirmClientLinkage(Int32 id);
+
 
         /// <summary>
         /// List client linkages for a firm or client
@@ -3577,6 +3847,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* firmAccountName, clientAccountName</param>
         FetchResult<FirmClientLinkageOutputModel> ListFirmClientLinkage(String filter);
 
+
         /// <summary>
         /// Rejects linkage to a firm for a client account
         /// </summary>
@@ -3589,6 +3860,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         FirmClientLinkageOutputModel RejectFirmClientLinkage(Int32 id);
+
 
         /// <summary>
         /// Reset linkage status between a client and firm back to requested
@@ -3603,6 +3875,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         FirmClientLinkageOutputModel ResetFirmClientLinkage(Int32 id);
 
+
         /// <summary>
         /// Revokes previously approved linkage to a firm for a client account
         /// </summary>
@@ -3615,6 +3888,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         FirmClientLinkageOutputModel RevokeFirmClientLinkage(Int32 id);
+
 
         /// <summary>
         /// FREE API - Request a free trial of AvaTax
@@ -3637,6 +3911,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Required information to provision a free trial account.</param>
         NewAccountModel RequestFreeTrial(FreeTrialRequestModel model);
+
 
         /// <summary>
         /// Request the javascript for a funding setup widget
@@ -3663,6 +3938,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this funding request</param>
         FundingStatusModel ActivateFundingRequest(Int64 id);
 
+
         /// <summary>
         /// Retrieve status about a funding setup request
         /// </summary>
@@ -3686,6 +3962,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this funding request</param>
         FundingStatusModel FundingRequestStatus(Int32 id);
 
+
         /// <summary>
         /// Delete all classifications for an item
         /// </summary>
@@ -3703,6 +3980,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this item.</param>
         /// <param name="itemId">The ID of the item you wish to delete the classifications.</param>
         List<ErrorDetail> BatchDeleteItemClassifications(Int32 companyId, Int64 itemId);
+
 
         /// <summary>
         /// Delete all parameters for an item
@@ -3724,6 +4002,30 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The ID of the item you wish to delete the parameters.</param>
         List<ErrorDetail> BatchDeleteItemParameters(Int32 companyId, Int64 itemId);
 
+
+        /// <summary>
+        /// Bulk upload items from a product catalog
+        /// </summary>
+        /// <remarks>
+        /// Create/Update one or more item objects attached to this company.
+        ///  
+        /// Items are a way of separating your tax calculation process from your tax configuration details. If you choose, you
+        /// can provide `itemCode` values for each `CreateTransaction()` API call rather than specifying tax codes, parameters, descriptions,
+        /// and other data fields. AvaTax will automatically look up each `itemCode` and apply the correct tax codes and parameters
+        /// from the item table instead. This allows your CreateTransaction call to be as simple as possible, and your tax compliance
+        /// team can manage your item catalog and adjust the tax behavior of items without having to modify your software.
+        ///  
+        /// The tax code takes precedence over the tax code id if both are provided.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that owns this items.</param>
+        /// <param name="model">The items you wish to upload.</param>
+        ItemBulkUploadOutputModel BulkUploadItems(Int32 companyId, ItemBulkUploadInputModel model);
+
+
         /// <summary>
         /// Add classifications to an item.
         /// </summary>
@@ -3744,6 +4046,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id.</param>
         /// <param name="model">The item classifications you wish to create.</param>
         List<ItemClassificationOutputModel> CreateItemClassifications(Int32 companyId, Int64 itemId, List<ItemClassificationInputModel> model);
+
 
         /// <summary>
         /// Add parameters to an item.
@@ -3770,6 +4073,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The item parameters you wish to create.</param>
         List<ItemParameterModel> CreateItemParameters(Int32 companyId, Int64 itemId, List<ItemParameterModel> model);
 
+
         /// <summary>
         /// Create a new item
         /// </summary>
@@ -3791,6 +4095,25 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this item.</param>
         /// <param name="model">The item you wish to create.</param>
         List<ItemModel> CreateItems(Int32 companyId, List<ItemModel> model);
+
+
+        /// <summary>
+        /// Create tags for a item
+        /// </summary>
+        /// <remarks>
+        /// Creates one or more new `Tag` objects attached to this Item.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        /// <param name="model">Tags you wish to associate with the Item</param>
+        List<ItemTagDetailModel> CreateItemTags(Int32 companyId, Int32 itemId, List<ItemTagDetailModel> model);
+
 
         /// <summary>
         /// Delete a single item
@@ -3814,6 +4137,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the item you wish to delete.</param>
         List<ErrorDetail> DeleteItem(Int32 companyId, Int64 id);
 
+
         /// <summary>
         /// Delete a single item classification.
         /// </summary>
@@ -3832,6 +4156,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id.</param>
         /// <param name="id">The item classification id.</param>
         List<ErrorDetail> DeleteItemClassification(Int32 companyId, Int64 itemId, Int64 id);
+
 
         /// <summary>
         /// Delete a single item parameter
@@ -3854,6 +4179,42 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The parameter id</param>
         List<ErrorDetail> DeleteItemParameter(Int32 companyId, Int64 itemId, Int64 id);
 
+
+        /// <summary>
+        /// Delete item tag by id
+        /// </summary>
+        /// <remarks>
+        /// Deletes the `Tag` object of an Item at this URL.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        /// <param name="itemTagDetailId">The ID of the item tag detail you wish to delete.</param>
+        List<ErrorDetail> DeleteItemTag(Int32 companyId, Int64 itemId, Int32 itemTagDetailId);
+
+
+        /// <summary>
+        /// Delete all item tags
+        /// </summary>
+        /// <remarks>
+        /// Deletes all `Tags` objects of an Item at this URL.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items.</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        List<ErrorDetail> DeleteItemTags(Int32 companyId, Int64 itemId);
+
+
         /// <summary>
         /// Retrieve a single item
         /// </summary>
@@ -3875,6 +4236,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         ItemModel GetItem(Int32 companyId, Int64 id, String include);
 
+
         /// <summary>
         /// Retrieve a single item classification.
         /// </summary>
@@ -3893,6 +4255,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id.</param>
         /// <param name="id">The item classification id.</param>
         ItemClassificationOutputModel GetItemClassification(Int32 companyId, Int64 itemId, Int64 id);
+
 
         /// <summary>
         /// Retrieve a single item parameter
@@ -3914,6 +4277,27 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id</param>
         /// <param name="id">The parameter id</param>
         ItemParameterModel GetItemParameter(Int32 companyId, Int64 itemId, Int64 id);
+
+
+        /// <summary>
+        /// Retrieve tags for an item
+        /// </summary>
+        /// <remarks>
+        /// Get the `Tag` objects of an Item identified by this URL.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* tagName</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        FetchResult<ItemTagDetailModel> GetItemTags(Int32 companyId, Int64 itemId, String filter, Int32? top, Int32? skip);
+
 
         /// <summary>
         /// Retrieve classifications for an item.
@@ -3940,6 +4324,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ItemClassificationOutputModel> ListItemClassifications(Int32 companyId, Int64 itemId, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve parameters for an item
         /// </summary>
@@ -3961,11 +4346,12 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId">The company id</param>
         /// <param name="itemId">The item id</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* name, unit</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* name, unit, isNeededForCalculation, isNeededForReturns, isNeededForClassification</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ItemParameterModel> ListItemParameters(Int32 companyId, Int64 itemId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve items for this company
@@ -3993,12 +4379,13 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.
         /// </remarks>
         /// <param name="companyId">The ID of the company that defined these items</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters, tags</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ItemModel> ListItemsByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all items
@@ -4020,12 +4407,43 @@ namespace Avalara.AvaTax.RestClient
         /// 
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.
         /// </remarks>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters, tags</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<ItemModel> QueryItems(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
+
+        /// <summary>
+        /// Retrieve all items associated with given tag
+        /// </summary>
+        /// <remarks>
+        /// Get multiple item objects associated with given tag.
+        ///  
+        /// Items are a way of separating your tax calculation process from your tax configuration details. If you choose, you
+        /// can provide `itemCode` values for each `CreateTransaction()` API call rather than specifying tax codes, parameters, descriptions,
+        /// and other data fields. AvaTax will automatically look up each `itemCode` and apply the correct tax codes and parameters
+        /// from the item table instead. This allows your CreateTransaction call to be as simple as possible, and your tax compliance
+        /// team can manage your item catalog and adjust the tax behavior of items without having to modify your software.
+        ///  
+        /// Search for specific objects using the criteria in the `$filter` parameter; full documentation is available on [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/) .
+        ///  
+        /// Paginate your results using the `$top`, `$skip`, and `$orderby` parameters.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items.</param>
+        /// <param name="tag">The master tag to be associated with item.</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters, tags</param>
+        /// <param name="include">A comma separated list of additional data to retrieve.</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        FetchResult<ItemModel> QueryItemsByTag(Int32 companyId, String tag, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Sync items from a product catalog
@@ -4051,6 +4469,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this item.</param>
         /// <param name="model">The request object.</param>
         SyncItemsResponseModel SyncItems(Int32 companyId, SyncItemsRequestModel model);
+
 
         /// <summary>
         /// Update a single item
@@ -4078,6 +4497,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The item object you wish to update.</param>
         ItemModel UpdateItem(Int32 companyId, Int64 id, ItemModel model);
 
+
         /// <summary>
         /// Update an item classification.
         /// </summary>
@@ -4099,6 +4519,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The item classification id.</param>
         /// <param name="model">The item object you wish to update.</param>
         ItemClassificationOutputModel UpdateItemClassification(Int32 companyId, Int64 itemId, Int64 id, ItemClassificationInputModel model);
+
 
         /// <summary>
         /// Update an item parameter
@@ -4122,6 +4543,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The item object you wish to update.</param>
         ItemParameterModel UpdateItemParameter(Int32 companyId, Int64 itemId, Int64 id, ItemParameterModel model);
 
+
         /// <summary>
         /// Create one or more overrides
         /// </summary>
@@ -4141,6 +4563,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The jurisdiction override objects to create</param>
         List<JurisdictionOverrideModel> CreateJurisdictionOverrides(Int32 accountId, List<JurisdictionOverrideModel> model);
 
+
         /// <summary>
         /// Delete a single override
         /// </summary>
@@ -4154,6 +4577,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this override</param>
         /// <param name="id">The ID of the override you wish to delete</param>
         List<ErrorDetail> DeleteJurisdictionOverride(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single override
@@ -4173,6 +4597,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this override</param>
         /// <param name="id">The primary key of this override</param>
         JurisdictionOverrideModel GetJurisdictionOverride(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Retrieve overrides for this account
@@ -4200,6 +4625,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<JurisdictionOverrideModel> ListJurisdictionOverridesByAccount(Int32 accountId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all overrides
         /// </summary>
@@ -4225,6 +4651,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<JurisdictionOverrideModel> QueryJurisdictionOverrides(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single jurisdictionoverride
         /// </summary>
@@ -4239,6 +4666,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the jurisdictionoverride you wish to update</param>
         /// <param name="model">The jurisdictionoverride object you wish to update.</param>
         JurisdictionOverrideModel UpdateJurisdictionOverride(Int32 accountId, Int32 id, JurisdictionOverrideModel model);
+
 
         /// <summary>
         /// Add parameters to a location.
@@ -4265,6 +4693,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The location parameters you wish to create.</param>
         List<LocationParameterModel> CreateLocationParameters(Int32 companyId, Int32 locationId, List<LocationParameterModel> model);
 
+
         /// <summary>
         /// Create a new location
         /// </summary>
@@ -4279,6 +4708,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The location you wish to create.</param>
         List<LocationModel> CreateLocations(Int32 companyId, List<LocationModel> model);
 
+
         /// <summary>
         /// Delete a single location
         /// </summary>
@@ -4292,6 +4722,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this location.</param>
         /// <param name="id">The ID of the location you wish to delete.</param>
         List<ErrorDetail> DeleteLocation(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Delete a single location parameter
@@ -4313,6 +4744,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="locationId">The location id</param>
         /// <param name="id">The parameter id</param>
         List<ErrorDetail> DeleteLocationParameter(Int32 companyId, Int32 locationId, Int64 id);
+
 
         /// <summary>
         /// Retrieve a single location
@@ -4338,6 +4770,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         LocationModel GetLocation(Int32 companyId, Int32 id, String include);
 
+
         /// <summary>
         /// Retrieve a single company location parameter
         /// </summary>
@@ -4358,6 +4791,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="locationId">The location id</param>
         /// <param name="id">The parameter id</param>
         LocationParameterModel GetLocationParameter(Int32 companyId, Int32 locationId, Int64 id);
+
 
         /// <summary>
         /// Retrieve parameters for a location
@@ -4385,6 +4819,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<LocationParameterModel> ListLocationParameters(Int32 companyId, Int32 locationId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve locations for this company
@@ -4415,6 +4850,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<LocationModel> ListLocationsByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all locations
         /// </summary>
@@ -4444,6 +4880,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<LocationModel> QueryLocations(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single location
         /// </summary>
@@ -4460,6 +4897,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the location you wish to update</param>
         /// <param name="model">The location you wish to update.</param>
         LocationModel UpdateLocation(Int32 companyId, Int32 id, LocationModel model);
+
 
         /// <summary>
         /// Update a location parameter
@@ -4483,6 +4921,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The location parameter object you wish to update.</param>
         LocationParameterModel UpdateLocationParameter(Int32 companyId, Int32 locationId, Int64 id, LocationParameterModel model);
 
+
         /// <summary>
         /// Validate the location against local requirements
         /// </summary>
@@ -4498,6 +4937,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this location</param>
         /// <param name="id">The primary key of this location</param>
         LocationValidationModel ValidateLocation(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Adjust a MultiDocument transaction
@@ -4532,6 +4972,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The adjust request you wish to execute</param>
         MultiDocumentModel AdjustMultiDocumentTransaction(String code, DocumentType type, String include, AdjustMultiDocumentModel model);
+
 
         /// <summary>
         /// Get audit information about a MultiDocument transaction
@@ -4569,6 +5010,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="type">The transaction type for this MultiDocument transaction</param>
         AuditMultiDocumentModel AuditMultiDocumentTransaction(String code, DocumentType type);
 
+
         /// <summary>
         /// Commit a MultiDocument transaction
         /// </summary>
@@ -4597,6 +5039,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">The commit request you wish to execute</param>
         MultiDocumentModel CommitMultiDocumentTransaction(CommitMultiDocumentModel model);
+
 
         /// <summary>
         /// Create a new MultiDocument transaction
@@ -4652,6 +5095,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">the multi document transaction model</param>
         MultiDocumentModel CreateMultiDocumentTransaction(String include, CreateMultiDocumentModel model);
 
+
         /// <summary>
         /// Retrieve a MultiDocument transaction
         /// </summary>
@@ -4686,6 +5130,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="type">The transaction type to retrieve</param>
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         MultiDocumentModel GetMultiDocumentTransactionByCodeAndType(String code, DocumentType type, String include);
+
 
         /// <summary>
         /// Retrieve a MultiDocument transaction by ID
@@ -4730,6 +5175,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         MultiDocumentModel GetMultiDocumentTransactionById(Int64 id, String include);
 
+
         /// <summary>
         /// Retrieve all MultiDocument transactions
         /// </summary>
@@ -4773,6 +5219,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<MultiDocumentModel> ListMultiDocumentTransactions(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Create a refund for a MultiDocument transaction
@@ -4834,6 +5281,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the refund to create</param>
         MultiDocumentModel RefundMultiDocumentTransaction(String code, DocumentType type, String include, RefundTransactionModel model);
 
+
         /// <summary>
         /// Verify a MultiDocument transaction
         /// </summary>
@@ -4860,6 +5308,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Information from your accounting system to verify against this MultiDocument transaction as it is stored in AvaTax</param>
         MultiDocumentModel VerifyMultiDocumentTransaction(VerifyMultiDocumentModel model);
+
 
         /// <summary>
         /// Void a MultiDocument transaction
@@ -4893,6 +5342,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The void request you wish to execute</param>
         MultiDocumentModel VoidMultiDocumentTransaction(String code, DocumentType type, VoidTransactionModel model);
 
+
         /// <summary>
         /// Create a new nexus
         /// </summary>
@@ -4925,6 +5375,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The nexus you wish to create.</param>
         List<NexusModel> CreateNexus(Int32 companyId, List<NexusModel> model);
 
+
         /// <summary>
         /// Add parameters to a nexus.
         /// </summary>
@@ -4948,6 +5399,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="nexusId">The nexus id.</param>
         /// <param name="model">The nexus parameters you wish to create.</param>
         List<NexusParameterDetailModel> CreateNexusParameters(Int32 companyId, Int32 nexusId, List<NexusParameterDetailModel> model);
+
 
         /// <summary>
         /// Creates nexus for a list of addresses.
@@ -4977,6 +5429,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The nexus you wish to create.</param>
         List<NexusByAddressModel> DeclareNexusByAddress(Int32 companyId, List<DeclareNexusByAddressModel> model);
 
+
         /// <summary>
         /// Delete a single nexus
         /// </summary>
@@ -4999,6 +5452,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="cascadeDelete">If true, deletes all the child nexus if they exist along with parent nexus</param>
         List<ErrorDetail> DeleteNexus(Int32 companyId, Int32 id, Boolean? cascadeDelete);
 
+
         /// <summary>
         /// Delete a single nexus parameter
         /// </summary>
@@ -5019,6 +5473,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The parameter id</param>
         List<ErrorDetail> DeleteNexusParameter(Int32 companyId, Int32 nexusId, Int64 id);
 
+
         /// <summary>
         /// Delete all parameters for an nexus
         /// </summary>
@@ -5037,6 +5492,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this nexus.</param>
         /// <param name="nexusId">The ID of the nexus you wish to delete the parameters.</param>
         List<ErrorDetail> DeleteNexusParameters(Int32 companyId, Int32 nexusId);
+
 
         /// <summary>
         /// Retrieve a single nexus
@@ -5059,6 +5515,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The primary key of this nexus</param>
         /// <param name="include"></param>
         NexusModel GetNexus(Int32 companyId, Int32 id, String include);
+
 
         /// <summary>
         /// List company nexus related to a tax form
@@ -5086,6 +5543,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include"></param>
         NexusByTaxFormModel GetNexusByFormCode(Int32 companyId, String formCode, String include);
 
+
         /// <summary>
         /// Retrieve a single nexus parameter
         /// </summary>
@@ -5105,6 +5563,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="nexusId">The nexus id</param>
         /// <param name="id">The parameter id</param>
         NexusParameterDetailModel GetNexusParameter(Int32 companyId, Int32 nexusId, Int64 id);
+
 
         /// <summary>
         /// Retrieve nexus for this company
@@ -5134,6 +5593,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusModel> ListNexusByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve parameters for a nexus
         /// </summary>
@@ -5159,6 +5619,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusParameterDetailModel> ListNexusParameters(Int32 companyId, Int32 nexusId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all nexus
@@ -5186,6 +5647,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NexusModel> QueryNexus(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Update a single nexus
@@ -5220,6 +5682,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The nexus object you wish to update.</param>
         NexusModel UpdateNexus(Int32 companyId, Int32 id, NexusModel model);
 
+
         /// <summary>
         /// Update an nexus parameter
         /// </summary>
@@ -5241,6 +5704,65 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The nexus parameter id</param>
         /// <param name="model">The nexus object you wish to update.</param>
         NexusParameterDetailModel UpdateNexusParameter(Int32 companyId, Int32 nexusId, Int64 id, NexusParameterDetailModel model);
+
+
+        /// <summary>
+        /// Creates a new tax notice responsibility type.
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
+        /// * This API depends on the following active services:*Returns* (at least one of): Mrs, MRSComplianceManager, AvaTaxCsp.*Firm Managed* (for accounts managed by a firm): ARA, ARAManaged.
+        /// </remarks>
+        /// <param name="model">The responsibility type to create</param>
+        NoticeResponsibilityModel CreateNoticeResponsibilityType(CreateNoticeResponsibilityTypeModel model);
+
+
+        /// <summary>
+        /// Creates a new tax notice root cause type.
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
+        /// * This API depends on the following active services:*Returns* (at least one of): Mrs, MRSComplianceManager, AvaTaxCsp.*Firm Managed* (for accounts managed by a firm): ARA, ARAManaged.
+        /// </remarks>
+        /// <param name="model">The root cause type to create</param>
+        NoticeRootCauseModel CreateNoticeRootCauseType(CreateNoticeRootCauseTypeModel model);
+
+
+        /// <summary>
+        /// Delete a tax notice responsibility type.
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
+        /// </remarks>
+        /// <param name="responsibilityId">The unique ID of the responsibility type</param>
+        List<ErrorDetail> DeleteNoticeResponsibilityType(Int32 responsibilityId);
+
+
+        /// <summary>
+        /// Delete a tax notice root cause type.
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
+        /// </remarks>
+        /// <param name="rootCauseId">The unique ID of the root cause type</param>
+        List<ErrorDetail> DeleteNoticeRootCauseType(Int32 rootCauseId);
+
 
         /// <summary>
         /// Mark a single notification as dismissed.
@@ -5268,6 +5790,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the notification you wish to mark as dismissed.</param>
         NotificationModel DismissNotification(Int64 id);
 
+
         /// <summary>
         /// Retrieve a single notification.
         /// </summary>
@@ -5287,6 +5810,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The id of the notification to retrieve.</param>
         NotificationModel GetNotification(Int64 id);
+
 
         /// <summary>
         /// List all notifications.
@@ -5313,6 +5837,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<NotificationModel> ListNotifications(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Request a new Avalara account
@@ -5342,6 +5867,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the account you wish to create and the selected product offerings.</param>
         NewAccountModel RequestNewAccount(NewAccountRequestModel model);
 
+
         /// <summary>
         /// Request a new entitilement to an existing customer
         /// </summary>
@@ -5359,6 +5885,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="offer">The offer to be added to an already existing customer</param>
         OfferModel RequestNewEntitlement(Int32 id, String offer);
 
+
         /// <summary>
         /// Create a new account
         /// </summary>
@@ -5375,6 +5902,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">The account you wish to create.</param>
         List<AccountModel> CreateAccount(AccountModel model);
+
 
         /// <summary>
         /// Create new notifications.
@@ -5402,6 +5930,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The notifications you wish to create.</param>
         List<NotificationModel> CreateNotifications(List<NotificationModel> model);
 
+
         /// <summary>
         /// Create a new subscription
         /// </summary>
@@ -5420,6 +5949,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The subscription you wish to create.</param>
         List<SubscriptionModel> CreateSubscriptions(Int32 accountId, List<SubscriptionModel> model);
 
+
         /// <summary>
         /// Delete a single account
         /// </summary>
@@ -5436,6 +5966,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The ID of the account you wish to delete.</param>
         List<ErrorDetail> DeleteAccount(Int32 id);
+
 
         /// <summary>
         /// Delete a single notification.
@@ -5460,6 +5991,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the notification you wish to delete.</param>
         List<ErrorDetail> DeleteNotification(Int64 id);
 
+
         /// <summary>
         /// Delete a single subscription
         /// </summary>
@@ -5476,6 +6008,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this subscription.</param>
         /// <param name="id">The ID of the subscription you wish to delete.</param>
         List<ErrorDetail> DeleteSubscription(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Reset a user's password programmatically
@@ -5498,6 +6031,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The new password for this user</param>
         String ResetPassword(Int32 userId, Boolean? unmigrateFromAi, SetPasswordModel model);
 
+
         /// <summary>
         /// Update a single account
         /// </summary>
@@ -5514,6 +6048,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account you wish to update.</param>
         /// <param name="model">The account object you wish to update.</param>
         AccountModel UpdateAccount(Int32 id, AccountModel model);
+
 
         /// <summary>
         /// Update a single notification.
@@ -5539,6 +6074,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The notification object you wish to update.</param>
         NotificationModel UpdateNotification(Int64 id, NotificationModel model);
 
+
         /// <summary>
         /// Update a single subscription
         /// </summary>
@@ -5561,6 +6097,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The subscription you wish to update.</param>
         SubscriptionModel UpdateSubscription(Int32 accountId, Int32 id, SubscriptionModel model);
 
+
         /// <summary>
         /// Download a report
         /// </summary>
@@ -5578,7 +6115,7 @@ namespace Avalara.AvaTax.RestClient
         /// * Check the status of a report by calling `GetReport` and passing in the report's `id` value.
         /// * When a report's status is `Completed`, call `DownloadReport` to retrieve the file.
         ///  
-        /// This API works for all report types.
+        /// * We throttle this API. You can only call this API up to 5 times in a minute.
         /// 
         /// ### Security Policies
         /// 
@@ -5586,6 +6123,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The unique ID number of this report</param>
         FileResult DownloadReport(Int64 id);
+
 
         /// <summary>
         /// Retrieve a single report
@@ -5605,6 +6143,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The unique ID number of the report to retrieve</param>
         ReportModel GetReport(Int64 id);
+
 
         /// <summary>
         /// Initiate an ExportDocumentLine report task
@@ -5639,6 +6178,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Options that may be configured to customize the report.</param>
         List<ReportModel> InitiateExportDocumentLineReport(Int32 companyId, ExportDocumentLineModel model);
 
+
         /// <summary>
         /// List all report tasks for account
         /// </summary>
@@ -5665,6 +6205,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         FetchResult<ReportModel> ListReports(Int32? companyId, String pageKey, Int32? skip, Int32? top);
 
+
         /// <summary>
         /// Create a new setting
         /// </summary>
@@ -5679,6 +6220,11 @@ namespace Avalara.AvaTax.RestClient
         /// A setting can refer to any type of data you need to remember about this company object.
         /// When creating this object, you may define your own `set`, `name`, and `value` parameters.
         /// To define your own values, please choose a `set` name that begins with `X-` to indicate an extension.
+        ///  
+        /// Use Set = Transactions, Name = TaxCodePrioritization/HSCodePrioritization and Value = Transaction/ItemMaster for prioritizing which TaxCodes/HsCodes should be used for calculating taxes.
+        ///  
+        /// Example: To prioritize TaxCodes passed in a Transaction over values stored with Items when calculating tax, use
+        /// Set = Transactions, Name = TaxCodePrioritization, Value = Transaction
         /// 
         /// ### Security Policies
         /// 
@@ -5687,6 +6233,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this setting.</param>
         /// <param name="model">The setting you wish to create.</param>
         List<SettingModel> CreateSettings(Int32 companyId, List<SettingModel> model);
+
 
         /// <summary>
         /// Delete a single setting
@@ -5711,6 +6258,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the setting you wish to delete.</param>
         List<ErrorDetail> DeleteSetting(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Retrieve a single setting
         /// </summary>
@@ -5733,6 +6281,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this setting</param>
         /// <param name="id">The primary key of this setting</param>
         SettingModel GetSetting(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve all settings for this company
@@ -5757,12 +6306,13 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.
         /// </remarks>
         /// <param name="companyId">The ID of the company that owns these settings</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* modifiedDate, ModifiedUserId</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SettingModel> ListSettingsByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all settings
@@ -5786,12 +6336,13 @@ namespace Avalara.AvaTax.RestClient
         /// 
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.
         /// </remarks>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* modifiedDate, ModifiedUserId</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SettingModel> QuerySettings(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Update a single setting
@@ -5821,6 +6372,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The setting you wish to update.</param>
         SettingModel UpdateSetting(Int32 companyId, Int32 id, SettingModel model);
 
+
         /// <summary>
         /// Retrieve a single subscription
         /// </summary>
@@ -5836,6 +6388,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this subscription</param>
         /// <param name="id">The primary key of this subscription</param>
         SubscriptionModel GetSubscription(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Retrieve subscriptions for this account
@@ -5859,6 +6412,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SubscriptionModel> ListSubscriptionsByAccount(Int32 accountId, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all subscriptions
         /// </summary>
@@ -5880,6 +6434,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<SubscriptionModel> QuerySubscriptions(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Create a new tax code
         /// </summary>
@@ -5898,6 +6453,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The tax code you wish to create.</param>
         List<TaxCodeModel> CreateTaxCodes(Int32 companyId, List<TaxCodeModel> model);
 
+
         /// <summary>
         /// Delete a single tax code
         /// </summary>
@@ -5911,6 +6467,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax code.</param>
         /// <param name="id">The ID of the tax code you wish to delete.</param>
         List<ErrorDetail> DeleteTaxCode(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single tax code
@@ -5929,6 +6486,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax code</param>
         /// <param name="id">The primary key of this tax code</param>
         TaxCodeModel GetTaxCode(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve tax codes for this company
@@ -5955,6 +6513,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxCodeModel> ListTaxCodesByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all tax codes
         /// </summary>
@@ -5979,6 +6538,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxCodeModel> QueryTaxCodes(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single tax code
         /// </summary>
@@ -5999,6 +6559,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the tax code you wish to update</param>
         /// <param name="model">The tax code you wish to update.</param>
         TaxCodeModel UpdateTaxCode(Int32 companyId, Int32 id, TaxCodeModel model);
+
 
         /// <summary>
         /// Build a multi-location tax content file
@@ -6035,6 +6596,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Parameters about the desired file format and report format, specifying which company, locations and TaxCodes to include.</param>
         FileResult BuildTaxContentFile(PointOfSaleDataRequestModel model);
+
 
         /// <summary>
         /// Build a tax content file for a single location
@@ -6076,6 +6638,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="partnerId">If specified, requests a custom partner-formatted version of the file.</param>
         /// <param name="includeJurisCodes">When true, the file will include jurisdiction codes in the result.</param>
         FileResult BuildTaxContentFileForLocation(Int32 companyId, Int32 id, DateTime? date, PointOfSaleFileType? format, PointOfSalePartnerId? partnerId, Boolean? includeJurisCodes);
+
 
         /// <summary>
         /// Download a file listing tax rates by postal code
@@ -6130,6 +6693,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="region">A two character region code which limits results to a specific region.</param>
         FileResult DownloadTaxRatesByZipCode(DateTime date, String region);
 
+
         /// <summary>
         /// Sales tax rates for a specified address
         /// </summary>
@@ -6179,6 +6743,7 @@ namespace Avalara.AvaTax.RestClient
         /// For a full list of all supported codes and names, please see the Definitions API `ListCountries`.</param>
         TaxRateModel TaxRatesByAddress(String line1, String line2, String line3, String city, String region, String postalCode, String country);
 
+
         /// <summary>
         /// Sales tax rates for a specified country and postal code. This API is only available for US postal codes.
         /// </summary>
@@ -6218,6 +6783,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="postalCode">The postal code of the location.</param>
         TaxRateModel TaxRatesByPostalCode(String country, String postalCode);
 
+
         /// <summary>
         /// Create a new tax rule
         /// </summary>
@@ -6243,6 +6809,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax rule.</param>
         /// <param name="model">The tax rule you wish to create.</param>
         List<TaxRuleModel> CreateTaxRules(Int32 companyId, List<TaxRuleModel> model);
+
 
         /// <summary>
         /// Delete a single tax rule
@@ -6270,6 +6837,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the tax rule you wish to delete.</param>
         List<ErrorDetail> DeleteTaxRule(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Retrieve a single tax rule
         /// </summary>
@@ -6295,6 +6863,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax rule</param>
         /// <param name="id">The primary key of this tax rule</param>
         TaxRuleModel GetTaxRule(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve tax rules for this company
@@ -6329,6 +6898,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxRuleModel> ListTaxRules(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all tax rules
         /// </summary>
@@ -6361,6 +6931,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TaxRuleModel> QueryTaxRules(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single tax rule
         /// </summary>
@@ -6387,6 +6958,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the tax rule you wish to update</param>
         /// <param name="model">The tax rule you wish to update.</param>
         TaxRuleModel UpdateTaxRule(Int32 companyId, Int32 id, TaxRuleModel model);
+
 
         /// <summary>
         /// Add lines to an existing unlocked transaction
@@ -6421,6 +6993,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         /// <param name="model">information about the transaction and lines to be added</param>
         TransactionModel AddLines(String include, AddTransactionLineModel model);
+
 
         /// <summary>
         /// Correct a previously created transaction
@@ -6468,6 +7041,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The adjustment you wish to make</param>
         TransactionModel AdjustTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include, AdjustTransactionModel model);
 
+
         /// <summary>
         /// Get audit information about a transaction
         /// </summary>
@@ -6504,6 +7078,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyCode">The code identifying the company that owns this transaction</param>
         /// <param name="transactionCode">The code identifying the transaction</param>
         AuditTransactionModel AuditTransaction(String companyCode, String transactionCode);
+
 
         /// <summary>
         /// Get audit information about a transaction
@@ -6543,6 +7118,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="documentType">The document type of the original transaction</param>
         AuditTransactionModel AuditTransactionWithType(String companyCode, String transactionCode, DocumentType documentType);
 
+
         /// <summary>
         /// Lock a set of documents
         /// </summary>
@@ -6562,6 +7138,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">bulk lock request</param>
         BulkLockTransactionResult BulkLockTransaction(BulkLockTransactionModel model);
+
 
         /// <summary>
         /// Change a transaction's code
@@ -6609,6 +7186,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The code change request you wish to execute</param>
         TransactionModel ChangeTransactionCode(String companyCode, String transactionCode, DocumentType? documentType, String include, ChangeTransactionCodeModel model);
 
+
         /// <summary>
         /// Commit a transaction for reporting
         /// </summary>
@@ -6652,6 +7230,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The commit request you wish to execute</param>
         TransactionModel CommitTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include, CommitTransactionModel model);
+
 
         /// <summary>
         /// Create or adjust a transaction
@@ -6699,6 +7278,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         /// <param name="model">The transaction you wish to create or adjust</param>
         TransactionModel CreateOrAdjustTransaction(String include, CreateOrAdjustTransactionModel model);
+
 
         /// <summary>
         /// Create a new transaction
@@ -6754,6 +7334,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The transaction you wish to create</param>
         TransactionModel CreateTransaction(String include, CreateTransactionModel model);
 
+
         /// <summary>
         /// Remove lines from an existing unlocked transaction
         /// </summary>
@@ -6784,6 +7365,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         /// <param name="model">information about the transaction and lines to be removed</param>
         TransactionModel DeleteLines(String include, RemoveTransactionLineModel model);
+
 
         /// <summary>
         /// Retrieve a single transaction by code
@@ -6827,6 +7409,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         TransactionModel GetTransactionByCode(String companyCode, String transactionCode, DocumentType? documentType, String include);
 
+
         /// <summary>
         /// Retrieve a single transaction by code
         /// </summary>
@@ -6851,6 +7434,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="documentType">The transaction type to retrieve</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
         TransactionModel GetTransactionByCodeAndType(String companyCode, String transactionCode, DocumentType documentType, String include);
+
 
         /// <summary>
         /// Retrieve a single transaction by ID
@@ -6882,6 +7466,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of the transaction to retrieve</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
         TransactionModel GetTransactionById(Int64 id, String include);
+
 
         /// <summary>
         /// Retrieve all transactions
@@ -6925,11 +7510,12 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyCode">The company code of the company that recorded this transaction</param>
         /// <param name="dataSourceId">Optionally filter transactions to those from a specific data source.</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* exchangeRateCurrencyCode, totalDiscount, lines, addresses, locationTypes, summary, taxDetailsByTaxType, parameters, messages, invoiceMessages, isFakeTransaction</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* exchangeRateCurrencyCode, totalDiscount, lines, addresses, locationTypes, summary, taxDetailsByTaxType, parameters, userDefinedFields, messages, invoiceMessages, isFakeTransaction, deliveryTerms</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<TransactionModel> ListTransactionsByCompany(String companyCode, Int32? dataSourceId, String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Lock a single transaction
@@ -6976,6 +7562,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The lock request you wish to execute</param>
         TransactionModel LockTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include, LockTransactionModel model);
+
 
         /// <summary>
         /// Create a refund for a transaction
@@ -7034,6 +7621,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the refund to create</param>
         TransactionModel RefundTransaction(String companyCode, String transactionCode, String include, DocumentType? documentType, Boolean? useTaxDateOverride, RefundTransactionModel model);
 
+
         /// <summary>
         /// Perform multiple actions on a transaction
         /// </summary>
@@ -7078,6 +7666,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The data from an external system to reconcile against AvaTax</param>
         TransactionModel SettleTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include, SettleTransactionModel model);
 
+
         /// <summary>
         /// Uncommit a transaction for reporting
         /// </summary>
@@ -7116,6 +7705,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         TransactionModel UncommitTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include);
 
+
         /// <summary>
         /// Unvoids a transaction
         /// </summary>
@@ -7150,6 +7740,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="documentType">(Optional): The document type of the transaction to commit. If not provided, the default is SalesInvoice.</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
         TransactionModel UnvoidTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include);
+
 
         /// <summary>
         /// Verify a transaction
@@ -7193,6 +7784,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The data from an external system to reconcile against AvaTax</param>
         TransactionModel VerifyTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include, VerifyTransactionModel model);
+
 
         /// <summary>
         /// Void a transaction
@@ -7239,6 +7831,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The void request you wish to execute. To void a transaction the code must be set to 'DocVoided'</param>
         TransactionModel VoidTransaction(String companyCode, String transactionCode, DocumentType? documentType, String include, VoidTransactionModel model);
 
+
         /// <summary>
         /// Create a new UPC
         /// </summary>
@@ -7255,6 +7848,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The UPC you wish to create.</param>
         List<UPCModel> CreateUPCs(Int32 companyId, List<UPCModel> model);
 
+
         /// <summary>
         /// Delete a single UPC
         /// </summary>
@@ -7269,6 +7863,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this UPC.</param>
         /// <param name="id">The ID of the UPC you wish to delete.</param>
         List<ErrorDetail> DeleteUPC(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single UPC
@@ -7285,6 +7880,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this UPC</param>
         /// <param name="id">The primary key of this UPC</param>
         UPCModel GetUPC(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve UPCs for this company
@@ -7309,6 +7905,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<UPCModel> ListUPCsByCompany(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all UPCs
         /// </summary>
@@ -7331,6 +7928,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<UPCModel> QueryUPCs(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single UPC
         /// </summary>
@@ -7350,6 +7948,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The UPC you wish to update.</param>
         UPCModel UpdateUPC(Int32 companyId, Int32 id, UPCModel model);
 
+
         /// <summary>
         /// Change Password
         /// </summary>
@@ -7368,6 +7967,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">An object containing your current password and the new password.</param>
         String ChangePassword(PasswordChangeModel model);
+
 
         /// <summary>
         /// Create new users
@@ -7391,6 +7991,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The user or array of users you wish to create.</param>
         List<UserModel> CreateUsers(Int32 accountId, List<UserModel> model);
 
+
         /// <summary>
         /// Delete a single user
         /// </summary>
@@ -7409,6 +8010,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the user you wish to delete.</param>
         /// <param name="accountId">The accountID of the user you wish to delete.</param>
         List<ErrorDetail> DeleteUser(Int32 id, Int32 accountId);
+
 
         /// <summary>
         /// Retrieve a single user
@@ -7429,6 +8031,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The accountID of the user you wish to get.</param>
         /// <param name="include">Optional fetch commands.</param>
         UserModel GetUser(Int32 id, Int32 accountId, String include);
+
 
         /// <summary>
         /// Retrieve all entitlements for a single user
@@ -7458,6 +8061,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The accountID of the user you wish to get.</param>
         UserEntitlementModel GetUserEntitlements(Int32 id, Int32 accountId);
 
+
         /// <summary>
         /// Retrieve users for this account
         /// </summary>
@@ -7481,11 +8085,12 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="accountId">The accountID of the user you wish to list.</param>
         /// <param name="include">Optional fetch commands.</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* SuppressNewUserEmail</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<UserModel> ListUsersByAccount(Int32 accountId, String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all users
@@ -7511,11 +8116,12 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountOperator, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, Registrar, SiteAdmin, SSTAdmin, SystemAdmin, SystemOperator, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
         /// </remarks>
         /// <param name="include">Optional fetch commands.</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* SuppressNewUserEmail</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         FetchResult<UserModel> QueryUsers(String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Update a single user
@@ -7535,6 +8141,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The user object you wish to update.</param>
         UserModel UpdateUser(Int32 id, Int32 accountId, UserModel model);
 
+
         /// <summary>
         /// Checks if the current user is subscribed to a specific service
         /// </summary>
@@ -7551,6 +8158,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="serviceTypeId">The service to check</param>
         SubscriptionModel GetMySubscription(String serviceTypeId);
 
+
         /// <summary>
         /// List all services to which the current user is subscribed
         /// </summary>
@@ -7565,6 +8173,7 @@ namespace Avalara.AvaTax.RestClient
         /// specific features of AvaTax.
         /// </remarks>
         FetchResult<SubscriptionModel> ListMySubscriptions();
+
 
         /// <summary>
         /// Tests connectivity and version of the service
@@ -7592,6 +8201,7 @@ namespace Avalara.AvaTax.RestClient
         /// * This API may be called without providing authentication credentials.
         /// </remarks>
         PingResultModel Ping();
+
         #endregion
 
         #region Asynchronous
@@ -7624,6 +8234,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">A request confirming that you wish to reset the license key of this account.</param>
         Task<LicenseKeyModel> AccountResetLicenseKeyAsync(Int32 id, ResetLicenseKeyModel model);
 
+
         /// <summary>
         /// Activate an account by accepting terms and conditions;
         /// </summary>
@@ -7646,6 +8257,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account to activate</param>
         /// <param name="model">The activation request</param>
         Task<AccountModel> ActivateAccountAsync(Int32 id, ActivateAccountModel model);
+
 
         /// <summary>
         /// Retrieve audit history for an account.;
@@ -7677,6 +8289,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         Task<FetchResult<AuditModel>> AuditAccountAsync(Int32 id, DateTime? start, DateTime? end, Int32? top, Int32? skip);
 
+
         /// <summary>
         /// Create license key for this account;
         /// </summary>
@@ -7700,6 +8313,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         Task<LicenseKeyModel> CreateLicenseKeyAsync(Int32 id, AccountLicenseKeyModel model);
 
+
         /// <summary>
         /// Delete license key for this account by license key name;
         /// </summary>
@@ -7718,6 +8332,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="licensekeyname">The license key name you wish to update.</param>
         Task<List<ErrorDetail>> DeleteLicenseKeyAsync(Int32 id, String licensekeyname);
 
+
         /// <summary>
         /// Retrieve a single account;
         /// </summary>
@@ -7735,6 +8350,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account to retrieve</param>
         /// <param name="include">A comma separated list of special fetch options</param>
         Task<AccountModel> GetAccountAsync(Int32 id, String include);
+
 
         /// <summary>
         /// Get configuration settings for this account;
@@ -7760,6 +8376,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         Task<List<AccountConfigurationModel>> GetAccountConfigurationAsync(Int32 id);
 
+
         /// <summary>
         /// Retrieve license key by license key name;
         /// </summary>
@@ -7771,6 +8388,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account to retrieve</param>
         /// <param name="licensekeyname">The ID of the account to retrieve</param>
         Task<AccountLicenseKeyModel> GetLicenseKeyAsync(Int32 id, String licensekeyname);
+
 
         /// <summary>
         /// Retrieve all license keys for this account;
@@ -7784,6 +8402,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The ID of the account to retrieve</param>
         Task<List<AccountLicenseKeyModel>> GetLicenseKeysAsync(Int32 id);
+
 
         /// <summary>
         /// Retrieve all accounts;
@@ -7813,6 +8432,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<AccountModel>> QueryAccountsAsync(String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Change configuration settings for this account;
         /// </summary>
@@ -7837,6 +8457,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         /// <param name="model"></param>
         Task<List<AccountConfigurationModel>> SetAccountConfigurationAsync(Int32 id, List<AccountConfigurationModel> model);
+
 
         /// <summary>
         /// Retrieve geolocation information for a specified address;
@@ -7869,6 +8490,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="textCase">selectable text case for address validation</param>
         Task<AddressResolutionModel> ResolveAddressAsync(String line1, String line2, String line3, String city, String region, String postalCode, String country, TextCase? textCase);
 
+
         /// <summary>
         /// Retrieve geolocation information for a specified address;
         /// </summary>
@@ -7888,6 +8510,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The address to resolve</param>
         Task<AddressResolutionModel> ResolveAddressPostAsync(AddressValidationInfo model);
 
+
         /// <summary>
         /// Create a lookup file for a company;
         /// </summary>
@@ -7899,6 +8522,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The lookup file you wish to create</param>
         Task<AdvancedRuleLookupFileModel> CreateCompanyLookupFileAsync(Int32 accountId, Int32 companyId, AdvancedRuleLookupFileModel model);
 
+
         /// <summary>
         /// Delete a lookup file;
         /// </summary>
@@ -7908,6 +8532,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account for the company the lookup file is for</param>
         /// <param name="id">The unique ID/GUID for the company lookup file to be deleted</param>
         Task<List<ErrorDetail>> DeleteLookupFileAsync(Int32 accountId, String id);
+
 
         /// <summary>
         /// Get the lookup files for a company;
@@ -7919,6 +8544,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company for which to retrieve lookup files</param>
         Task<FetchResult<AdvancedRuleLookupFileModel>> GetCompanyLookupFilesAsync(Int32 accountId, Int32 companyId);
 
+
         /// <summary>
         /// Get a lookup file for an accountId and companyLookupFileId;
         /// </summary>
@@ -7928,6 +8554,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account for the lookup file</param>
         /// <param name="id">The unique ID/GUID of the company lookup file to return</param>
         Task<AdvancedRuleLookupFileModel> GetLookupFileAsync(Int32 accountId, String id);
+
 
         /// <summary>
         /// Update a lookup file;
@@ -7939,6 +8566,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID/GUID of the company lookup file to be updated</param>
         /// <param name="model">The new values to update the lookup file</param>
         Task<AdvancedRuleLookupFileModel> UpdateLookupFileAsync(Int32 accountId, String id, AdvancedRuleLookupFileModel model);
+
 
         /// <summary>
         /// Create a new AvaFileForm;
@@ -7955,6 +8583,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The AvaFileForm you wish to create.</param>
         Task<List<AvaFileFormModel>> CreateAvaFileFormsAsync(List<AvaFileFormModel> model);
 
+
         /// <summary>
         /// Delete a single AvaFileForm;
         /// </summary>
@@ -7969,6 +8598,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the AvaFileForm you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteAvaFileFormAsync(Int32 id);
 
+
         /// <summary>
         /// Retrieve a single AvaFileForm;
         /// </summary>
@@ -7982,6 +8612,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The primary key of this AvaFileForm</param>
         Task<AvaFileFormModel> GetAvaFileFormAsync(Int32 id);
+
 
         /// <summary>
         /// Retrieve all AvaFileForms;
@@ -8001,6 +8632,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<AvaFileFormModel>> QueryAvaFileFormsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a AvaFileForm;
         /// </summary>
@@ -8016,6 +8648,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the AvaFileForm you wish to update</param>
         /// <param name="model">The AvaFileForm model you wish to update.</param>
         Task<AvaFileFormModel> UpdateAvaFileFormAsync(Int32 id, AvaFileFormModel model);
+
 
         /// <summary>
         /// Cancel an in progress batch;
@@ -8041,6 +8674,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this batch.</param>
         /// <param name="id">The ID of the batch to cancel.</param>
         Task<BatchModel> CancelBatchAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Create a new batch;
@@ -8074,6 +8708,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The batch you wish to create.</param>
         Task<List<BatchModel>> CreateBatchesAsync(Int32 companyId, List<BatchModel> model);
 
+
         /// <summary>
         /// Create a new transaction batch;
         /// </summary>
@@ -8104,6 +8739,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The transaction batch you wish to create.</param>
         Task<CreateTransactionBatchResponseModel> CreateTransactionBatchAsync(Int32 companyId, CreateTransactionBatchRequestModel model);
 
+
         /// <summary>
         /// Delete a single batch;
         /// </summary>
@@ -8127,6 +8763,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the batch to delete.</param>
         Task<List<ErrorDetail>> DeleteBatchAsync(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Download a single batch file;
         /// </summary>
@@ -8141,6 +8778,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="batchId">The ID of the batch object</param>
         /// <param name="id">The primary key of this batch file object</param>
         Task<FileResult> DownloadBatchAsync(Int32 companyId, Int32 batchId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single batch;
@@ -8169,6 +8807,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this batch</param>
         /// <param name="id">The primary key of this batch</param>
         Task<BatchModel> GetBatchAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve all batches for this company;
@@ -8208,6 +8847,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<BatchModel>> ListBatchesByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all batches;
         /// </summary>
@@ -8242,6 +8882,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<BatchModel>> QueryBatchesAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Create a CertExpress invitation;
         /// </summary>
@@ -8271,6 +8912,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="customerCode">The number of the customer where the request is sent to</param>
         /// <param name="model">the requests to send out to customers</param>
         Task<List<CertExpressInvitationStatusModel>> CreateCertExpressInvitationAsync(Int32 companyId, String customerCode, List<CreateCertExpressInvitationModel> model);
+
 
         /// <summary>
         /// Retrieve a single CertExpress invitation;
@@ -8302,6 +8944,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this CertExpress invitation</param>
         /// <param name="include">OPTIONAL: A comma separated list of special fetch options. No options are defined at this time.</param>
         Task<CertExpressInvitationModel> GetCertExpressInvitationAsync(Int32 companyId, String customerCode, Int32 id, String include);
+
 
         /// <summary>
         /// List CertExpress invitations;
@@ -8337,6 +8980,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CertExpressInvitationModel>> ListCertExpressInvitationsAsync(Int32 companyId, String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Create certificates for this company;
@@ -8374,6 +9018,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Certificates to be created</param>
         Task<List<CertificateModel>> CreateCertificatesAsync(Int32 companyId, Boolean? preValidatedExemptionReason, List<CertificateModel> model);
 
+
         /// <summary>
         /// Revoke and delete a certificate;
         /// </summary>
@@ -8400,6 +9045,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded this certificate</param>
         /// <param name="id">The unique ID number of this certificate</param>
         Task<List<ErrorDetail>> DeleteCertificateAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Download an image for this certificate;
@@ -8430,6 +9076,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="page">If you choose `$type`=`Jpeg`, you must specify which page number to retrieve.</param>
         /// <param name="type">The data format in which to retrieve the certificate image</param>
         Task<FileResult> DownloadCertificateImageAsync(Int32 companyId, Int32 id, Int32? page, CertificatePreviewType? type);
+
 
         /// <summary>
         /// Retrieve a single certificate;
@@ -8467,6 +9114,7 @@ namespace Avalara.AvaTax.RestClient
         ///  * attributes - Retrieves all attributes applied to the certificate.</param>
         Task<CertificateModel> GetCertificateAsync(Int32 companyId, Int32 id, String include);
 
+
         /// <summary>
         /// Check a company's exemption certificate status.;
         /// </summary>
@@ -8486,6 +9134,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId">The company ID to check</param>
         Task<ProvisionStatusModel> GetCertificateSetupAsync(Int32 companyId);
+
 
         /// <summary>
         /// Link attributes to a certificate;
@@ -8515,6 +9164,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="model">The list of attributes to link to this certificate.</param>
         Task<FetchResult<CertificateAttributeModel>> LinkAttributesToCertificateAsync(Int32 companyId, Int32 id, List<CertificateAttributeModel> model);
+
 
         /// <summary>
         /// Link customers to a certificate;
@@ -8546,6 +9196,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of customers needed be added to the Certificate for exemption</param>
         Task<FetchResult<CustomerModel>> LinkCustomersToCertificateAsync(Int32 companyId, Int32 id, LinkCustomersModel model);
 
+
         /// <summary>
         /// List all attributes applied to this certificate;
         /// </summary>
@@ -8573,6 +9224,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded this certificate</param>
         /// <param name="id">The unique ID number of this certificate</param>
         Task<FetchResult<CertificateAttributeModel>> ListAttributesForCertificateAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// List customers linked to this certificate;
@@ -8603,6 +9255,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">OPTIONAL: A comma separated list of special fetch options.
         ///  No options are currently available when fetching customers.</param>
         Task<FetchResult<CustomerModel>> ListCustomersForCertificateAsync(Int32 companyId, Int32 id, String include);
+
 
         /// <summary>
         /// List all certificates for a company;
@@ -8643,6 +9296,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CertificateModel>> QueryCertificatesAsync(Int32 companyId, String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Request setup of exemption certificates for this company.;
         /// </summary>
@@ -8664,6 +9318,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId"></param>
         Task<ProvisionStatusModel> RequestCertificateSetupAsync(Int32 companyId);
+
 
         /// <summary>
         /// Unlink attributes from a certificate;
@@ -8693,6 +9348,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="model">The list of attributes to unlink from this certificate.</param>
         Task<FetchResult<CertificateAttributeModel>> UnlinkAttributesFromCertificateAsync(Int32 companyId, Int32 id, List<CertificateAttributeModel> model);
+
 
         /// <summary>
         /// Unlink customers from a certificate;
@@ -8725,6 +9381,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of customers to unlink from this certificate</param>
         Task<FetchResult<CustomerModel>> UnlinkCustomersFromCertificateAsync(Int32 companyId, Int32 id, LinkCustomersModel model);
 
+
         /// <summary>
         /// Update a single certificate;
         /// </summary>
@@ -8750,6 +9407,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="model">The new certificate object that will replace the existing one</param>
         Task<CertificateModel> UpdateCertificateAsync(Int32 companyId, Int32 id, CertificateModel model);
+
 
         /// <summary>
         /// Upload an image or PDF attachment for this certificate;
@@ -8779,6 +9437,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this certificate</param>
         /// <param name="file">The exemption certificate file you wanted to upload. Accepted formats are: PDF, JPEG, TIFF, PNG.</param>
         Task<String> UploadCertificateImageAsync(Int32 companyId, Int32 id, FileResult file);
+
 
         /// <summary>
         /// Checks whether the integration being used to set up this company and run transactions onto this company is compliant to all requirements.;
@@ -8815,6 +9474,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the company to check if its integration is certified.</param>
         Task<String> CertifyIntegrationAsync(Int32 id);
 
+
         /// <summary>
         /// Change the filing status of this company;
         /// </summary>
@@ -8841,6 +9501,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         Task<String> ChangeFilingStatusAsync(Int32 id, FilingStatusChangeModel model);
 
+
         /// <summary>
         /// Quick setup for a company with a single physical address;
         /// </summary>
@@ -8865,6 +9526,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the company you wish to create.</param>
         Task<CompanyModel> CompanyInitializeAsync(CompanyInitializationModel model);
 
+
         /// <summary>
         /// Create new companies;
         /// </summary>
@@ -8881,6 +9543,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Either a single company object or an array of companies to create</param>
         Task<List<CompanyModel>> CreateCompaniesAsync(List<CompanyModel> model);
+
 
         /// <summary>
         /// Add parameters to a company.;
@@ -8906,6 +9569,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The company parameters you wish to create.</param>
         Task<List<CompanyParameterDetailModel>> CreateCompanyParametersAsync(Int32 companyId, List<CompanyParameterDetailModel> model);
 
+
         /// <summary>
         /// Request managed returns funding setup for a company;
         /// </summary>
@@ -8930,6 +9594,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The funding initialization request</param>
         Task<FundingStatusModel> CreateFundingRequestAsync(Int32 id, FundingInitiateModel model);
 
+
         /// <summary>
         /// Delete a single company;
         /// </summary>
@@ -8942,6 +9607,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The ID of the company you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteCompanyAsync(Int32 id);
+
 
         /// <summary>
         /// Delete a single company parameter;
@@ -8962,6 +9628,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The parameter id</param>
         Task<List<ErrorDetail>> DeleteCompanyParameterAsync(Int32 companyId, Int64 id);
 
+
         /// <summary>
         /// Check the funding configuration of a company;
         /// </summary>
@@ -8978,6 +9645,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId">The unique identifier of the company</param>
         Task<FundingConfigurationModel> FundingConfigurationByCompanyAsync(Int32 companyId);
+
 
         /// <summary>
         /// Check the funding configuration of a company;
@@ -8996,6 +9664,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique identifier of the company</param>
         /// <param name="currency">The currency of the funding. USD and CAD are the only valid currencies</param>
         Task<List<FundingConfigurationModel>> FundingConfigurationsByCompanyAndCurrencyAsync(Int32 companyId, String currency);
+
 
         /// <summary>
         /// Retrieve a single company;
@@ -9026,6 +9695,7 @@ namespace Avalara.AvaTax.RestClient
         ///  * Deleted objects - Specify "FetchDeleted" to retrieve information about previously deleted objects.</param>
         Task<CompanyModel> GetCompanyAsync(Int32 id, String include);
 
+
         /// <summary>
         /// Get configuration settings for this company;
         /// </summary>
@@ -9050,6 +9720,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         Task<List<CompanyConfigurationModel>> GetCompanyConfigurationAsync(Int32 id);
 
+
         /// <summary>
         /// Retrieve a single company parameter;
         /// </summary>
@@ -9070,6 +9741,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         Task<CompanyParameterDetailModel> GetCompanyParameterDetailAsync(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Get this company's filing status;
         /// </summary>
@@ -9087,6 +9759,7 @@ namespace Avalara.AvaTax.RestClient
         /// * `FilingRequested` - The company has requested to begin filing tax returns, but Avalara's compliance team has not yet begun filing.
         /// * `FirstFiling` - The company has recently filing tax returns and is in a new status.
         /// * `Active` - The company is currently active and is filing tax returns via Avalara Managed Returns.
+        /// * `Inactive` - The company is currently inactive.
         /// 
         /// ### Security Policies
         /// 
@@ -9094,6 +9767,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         Task<String> GetFilingStatusAsync(Int32 id);
+
 
         /// <summary>
         /// Retrieve parameters for a company;
@@ -9121,6 +9795,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CompanyParameterDetailModel>> ListCompanyParameterDetailsAsync(Int32 companyId, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Check managed returns funding status for a company;
         /// </summary>
@@ -9138,6 +9813,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique identifier of the company</param>
         Task<List<FundingStatusModel>> ListFundingRequestsByCompanyAsync(Int32 id);
 
+
         /// <summary>
         /// Retrieve a list of MRS Companies with account;
         /// </summary>
@@ -9151,6 +9827,7 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountOperator, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, Registrar, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.;
         /// </remarks>
         Task<FetchResult<MrsCompanyModel>> ListMrsCompaniesAsync();
+
 
         /// <summary>
         /// Retrieve all companies;
@@ -9185,6 +9862,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CompanyModel>> QueryCompaniesAsync(String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Change configuration settings for this company;
         /// </summary>
@@ -9210,6 +9888,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         Task<List<CompanyConfigurationModel>> SetCompanyConfigurationAsync(Int32 id, List<CompanyConfigurationModel> model);
 
+
         /// <summary>
         /// Update a single company;
         /// </summary>
@@ -9234,6 +9913,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The company object you wish to update.</param>
         Task<CompanyModel> UpdateCompanyAsync(Int32 id, CompanyModel model);
 
+
         /// <summary>
         /// Update a company parameter;
         /// </summary>
@@ -9255,15 +9935,6 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The company parameter object you wish to update.</param>
         Task<CompanyParameterDetailModel> UpdateCompanyParameterDetailAsync(Int32 companyId, Int64 id, CompanyParameterDetailModel model);
 
-        /// <summary>
-        /// API to modify the reference fields at the document and the line level.;
-        /// </summary>
-        /// <remarks>
-        /// ;
-        /// </remarks>
-        /// <param name="companyId"></param>
-        /// <param name="model"></param>
-        Task<FetchResult<TransactionModel>> TagTransactionAsync(Int32 companyId, List<TransactionReferenceFieldModel> model);
 
         /// <summary>
         /// Create a new contact;
@@ -9281,6 +9952,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The contacts you wish to create.</param>
         Task<List<ContactModel>> CreateContactsAsync(Int32 companyId, List<ContactModel> model);
 
+
         /// <summary>
         /// Delete a single contact;
         /// </summary>
@@ -9294,6 +9966,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this contact.</param>
         /// <param name="id">The ID of the contact you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteContactAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single contact;
@@ -9310,6 +9983,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company for this contact</param>
         /// <param name="id">The primary key of this contact</param>
         Task<ContactModel> GetContactAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve contacts for this company;
@@ -9330,6 +10004,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ContactModel>> ListContactsByCompanyAsync(Int32 companyId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all contacts;
@@ -9352,6 +10027,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ContactModel>> QueryContactsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single contact;
         /// </summary>
@@ -9370,6 +10046,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the contact you wish to update</param>
         /// <param name="model">The contact you wish to update.</param>
         Task<ContactModel> UpdateContactAsync(Int32 companyId, Int32 id, ContactModel model);
+
 
         /// <summary>
         /// Create customers for this company;
@@ -9400,6 +10077,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of customer objects to be created</param>
         Task<List<CustomerModel>> CreateCustomersAsync(Int32 companyId, List<CustomerModel> model);
 
+
         /// <summary>
         /// Delete a customer record;
         /// </summary>
@@ -9425,6 +10103,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded this customer</param>
         /// <param name="customerCode">The unique code representing this customer</param>
         Task<CustomerModel> DeleteCustomerAsync(Int32 companyId, String customerCode);
+
 
         /// <summary>
         /// Retrieve a single customer;
@@ -9459,6 +10138,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specify optional additional objects to include in this fetch request</param>
         Task<CustomerModel> GetCustomerAsync(Int32 companyId, String customerCode, String include);
 
+
         /// <summary>
         /// Link attributes to a customer;
         /// </summary>
@@ -9489,6 +10169,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of attributes to link to the customer.</param>
         Task<FetchResult<CustomerAttributeModel>> LinkAttributesToCustomerAsync(Int32 companyId, String customerCode, List<CustomerAttributeModel> model);
 
+
         /// <summary>
         /// Link certificates to a customer;
         /// </summary>
@@ -9515,6 +10196,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="customerCode">The unique code representing this customer</param>
         /// <param name="model">The list of certificates to link to this customer</param>
         Task<FetchResult<CertificateModel>> LinkCertificatesToCustomerAsync(Int32 companyId, String customerCode, LinkCertificatesModel model);
+
 
         /// <summary>
         /// Link two customer records together;
@@ -9544,6 +10226,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">A list of information about ship-to customers to link to this bill-to customer.</param>
         Task<CustomerModel> LinkShipToCustomersToBillCustomerAsync(Int32 companyId, String code, LinkCustomersModel model);
 
+
         /// <summary>
         /// Retrieve a customer's attributes;
         /// </summary>
@@ -9572,6 +10255,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The unique ID number of the company that recorded the provided customer</param>
         /// <param name="customerCode">The unique code representing the current customer</param>
         Task<FetchResult<CustomerAttributeModel>> ListAttributesForCustomerAsync(Int32 companyId, String customerCode);
+
 
         /// <summary>
         /// List certificates linked to a customer;
@@ -9608,6 +10292,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CertificateModel>> ListCertificatesForCustomerAsync(Int32 companyId, String customerCode, String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List valid certificates for a location;
         /// </summary>
@@ -9638,6 +10323,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="country">Search for certificates matching this country. Uses the ISO 3166 two character country code.</param>
         /// <param name="region">Search for certificates matching this region. Uses the ISO 3166 two or three character state, region, or province code.</param>
         Task<ExemptionStatusModel> ListValidCertificatesForCustomerAsync(Int32 companyId, String customerCode, String country, String region);
+
 
         /// <summary>
         /// List all customers for this company;
@@ -9674,6 +10360,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CustomerModel>> QueryCustomersAsync(Int32 companyId, String include, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Unlink attributes from a customer;
         /// </summary>
@@ -9704,6 +10391,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The list of attributes to unlink from the customer.</param>
         Task<FetchResult<CustomerAttributeModel>> UnlinkAttributesFromCustomerAsync(Int32 companyId, String customerCode, List<CustomerAttributeModel> model);
 
+
         /// <summary>
         /// Unlink certificates from a customer;
         /// </summary>
@@ -9730,6 +10418,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="customerCode">The unique code representing this customer</param>
         /// <param name="model">The list of certificates to link to this customer</param>
         Task<FetchResult<CertificateModel>> UnlinkCertificatesFromCustomerAsync(Int32 companyId, String customerCode, LinkCertificatesModel model);
+
 
         /// <summary>
         /// Update a single customer;
@@ -9758,6 +10447,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The new customer model that will replace the existing record at this URL</param>
         Task<CustomerModel> UpdateCustomerAsync(Int32 companyId, String customerCode, CustomerModel model);
 
+
         /// <summary>
         /// Create and store new datasources for the respective companies.;
         /// </summary>
@@ -9772,6 +10462,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The id of the company you which to create the datasources</param>
         /// <param name="model"></param>
         Task<List<DataSourceModel>> CreateDataSourcesAsync(Int32 companyId, List<DataSourceModel> model);
+
 
         /// <summary>
         /// Delete a datasource by datasource id for a company.;
@@ -9788,6 +10479,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the datasource you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteDataSourceAsync(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Get data source by data source id;
         /// </summary>
@@ -9802,6 +10494,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId"></param>
         /// <param name="id">data source id</param>
         Task<DataSourceModel> GetDataSourceByIdAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve all datasources for this company;
@@ -9820,6 +10513,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<DataSourceModel>> ListDataSourcesAsync(Int32 companyId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all datasources;
@@ -9841,6 +10535,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<DataSourceModel>> QueryDataSourcesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a datasource identified by id for a company;
         /// </summary>
@@ -9856,6 +10551,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the datasource you wish to delete.</param>
         /// <param name="model"></param>
         Task<DataSourceModel> UpdateDataSourceAsync(Int32 companyId, Int32 id, DataSourceModel model);
+
 
         /// <summary>
         /// Lists all parents of an HS Code.;
@@ -9880,6 +10576,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="hsCode">The partial or full HS Code for which you would like to view all of the parents.</param>
         Task<FetchResult<HsCodeModel>> GetCrossBorderCodeAsync(String country, String hsCode);
 
+
         /// <summary>
         /// Test whether a form supports online login verification;
         /// </summary>
@@ -9893,6 +10590,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SkyscraperStatusModel>> GetLoginVerifierByFormAsync(String form, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of the AvaFile Forms available;
@@ -9910,6 +10608,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<AvaFileFormModel>> ListAvaFileFormsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List certificate attributes used by a company;
@@ -9930,6 +10629,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CertificateAttributeModel>> ListCertificateAttributesAsync(Int32? companyid, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List the certificate exempt reasons defined by a company;
         /// </summary>
@@ -9947,6 +10647,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ExemptionReasonModel>> ListCertificateExemptReasonsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List certificate exposure zones used by a company;
@@ -9966,6 +10667,22 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ExposureZoneModel>> ListCertificateExposureZonesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
+        /// <summary>
+        /// Retrieve the full list of Avalara-supported usage of extra parameters for classification of a item.;
+        /// </summary>
+        /// <remarks>
+        /// Returns the full list of Avalara-supported usage of extra parameters for item classification.
+        /// The list of parameters is available for use with Item Classification.
+        /// Some parameters are only available for use if you have subscribed to certain features of AvaTax.;
+        /// </remarks>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* values</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        Task<FetchResult<ClassificationParameterUsageMapModel>> ListClassificationParametersUsageAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
+
         /// <summary>
         /// Retrieve the full list of communications service types;
         /// </summary>
@@ -9978,6 +10695,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CommunicationsTSPairModel>> ListCommunicationsServiceTypesAsync(Int32 id, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of communications transactiontypes;
@@ -9992,6 +10710,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CommunicationsTransactionTypeModel>> ListCommunicationsTransactionTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of communications transaction/service type pairs;
         /// </summary>
@@ -10004,6 +10723,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CommunicationsTSPairModel>> ListCommunicationsTSPairsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all ISO 3166 countries;
@@ -10018,6 +10738,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<IsoCountryModel>> ListCountriesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List certificate exposure zones used by a company;
@@ -10037,6 +10758,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CoverLetterModel>> ListCoverLettersAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Lists the next level of HS Codes given a destination country and HS Code prefix.;
@@ -10063,6 +10785,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<HsCodeModel>> ListCrossBorderCodesAsync(String country, String hsCode, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List top level HS Code Sections.;
         /// </summary>
@@ -10080,6 +10803,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         Task<FetchResult<HsCodeModel>> ListCrossBorderSectionsAsync();
 
+
         /// <summary>
         /// List all ISO 4217 currencies supported by AvaTax.;
         /// </summary>
@@ -10094,6 +10818,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CurrencyModel>> ListCurrenciesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported entity use codes;
@@ -10111,6 +10836,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<EntityUseCodeModel>> ListEntityUseCodesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported filing frequencies.;
         /// </summary>
@@ -10123,6 +10849,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<FilingFrequencyModel>> ListFilingFrequenciesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List jurisdictions based on the filter provided;
@@ -10140,6 +10867,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<JurisdictionModel>> ListJurisdictionsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List jurisdictions near a specific address;
@@ -10165,6 +10893,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<JurisdictionOverrideModel>> ListJurisdictionsByAddressAsync(String line1, String line2, String line3, String city, String region, String postalCode, String country, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the list of questions that are required for a tax location;
@@ -10192,6 +10921,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<LocationQuestionModel>> ListLocationQuestionsByAddressAsync(String line1, String line2, String line3, String city, String region, String postalCode, String country, Decimal? latitude, Decimal? longitude, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all forms where logins can be verified automatically;
         /// </summary>
@@ -10206,6 +10936,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SkyscraperStatusModel>> ListLoginVerifiersAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the list of locations for a marketplace.;
         /// </summary>
@@ -10217,6 +10948,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<MarketplaceLocationModel>> ListMarketplaceLocationsAsync(String marketplaceId, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported nexus for all countries and regions.;
@@ -10231,6 +10963,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusModel>> ListNexusAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all nexus that apply to a specific address.;
@@ -10270,6 +11003,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusModel>> ListNexusByAddressAsync(String line1, String line2, String line3, String city, String region, String postalCode, String country, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported nexus for a country.;
         /// </summary>
@@ -10284,6 +11018,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusModel>> ListNexusByCountryAsync(String country, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported nexus for a country and region.;
@@ -10300,6 +11035,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusModel>> ListNexusByCountryAndRegionAsync(String country, String region, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List nexus related to a tax form;
@@ -10324,6 +11060,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="formCode">The form code that we are looking up the nexus for</param>
         Task<NexusByTaxFormModel> ListNexusByFormCodeAsync(String formCode);
 
+
         /// <summary>
         /// Retrieve the full list of nexus tax type groups;
         /// </summary>
@@ -10336,6 +11073,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusTaxTypeGroupModel>> ListNexusTaxTypeGroupsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice customer funding options.;
@@ -10350,6 +11088,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeCustomerFundingOptionModel>> ListNoticeCustomerFundingOptionsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice customer types.;
         /// </summary>
@@ -10362,6 +11101,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeCustomerTypeModel>> ListNoticeCustomerTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice filing types.;
@@ -10376,6 +11116,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeFilingTypeModel>> ListNoticeFilingtypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice priorities.;
         /// </summary>
@@ -10388,6 +11129,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticePriorityModel>> ListNoticePrioritiesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice reasons.;
@@ -10402,6 +11144,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeReasonModel>> ListNoticeReasonsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice responsibility ids;
         /// </summary>
@@ -10414,6 +11157,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeResponsibilityModel>> ListNoticeResponsibilitiesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice root causes;
@@ -10428,6 +11172,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeRootCauseModel>> ListNoticeRootCausesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice statuses.;
         /// </summary>
@@ -10441,6 +11186,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeStatusModel>> ListNoticeStatusesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax notice types.;
         /// </summary>
@@ -10453,6 +11199,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NoticeTypeModel>> ListNoticeTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported extra parameters for creating transactions.;
@@ -10468,11 +11215,21 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ParameterModel>> ListParametersAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the parameters by companyCode and itemCode.;
         /// </summary>
         /// <remarks>
-        /// Returns the list of parameters based on the company country and state jurisdiction and the item code.
+        /// Returns the list of parameters based on the company's service types and the item code.
+        /// Ignores nexus if a service type is configured in the 'IgnoreNexusForServiceTypes' configuration section.
+        /// Ignores nexus for the AvaAlcohol service type.
+        ///  
+        /// NOTE: If your company code or item code contains any of these characters /, +, ? or a space, please use the following encoding before making a request:
+        /// * Replace '/' with '\_-ava2f-\_' For example: 'Company/Code' becomes 'Company_-ava2f-_Code'
+        /// * Replace '+' with '\_-ava2b-\_' For example: 'Company+Code' becomes 'Company_-ava2b-_Code'
+        /// * Replace '?' with '\_-ava3f-\_' For example: 'Company?Code' becomes 'Company_-ava3f-_Code'
+        /// * Replace '%' with '\_-ava25-\_' For example: 'Company%Code' becomes 'Company_-ava25-_Code'
+        /// * Replace '#' with '\_-ava23-\_' For example: 'Company#Code' becomes 'Company_-ava23-_Code'
         /// 
         /// ### Security Policies
         /// 
@@ -10485,6 +11242,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ParameterModel>> ListParametersByItemAsync(String companyCode, String itemCode, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported usage of extra parameters for creating transactions.;
@@ -10500,6 +11258,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ParameterUsageModel>> ListParametersUsageAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported permissions;
         /// </summary>
@@ -10510,6 +11269,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         Task<FetchResult<String>> ListPermissionsAsync(Int32? top, Int32? skip);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported postal codes.;
@@ -10522,6 +11282,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<PostalCodeModel>> ListPostalCodesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all customs duty programs recognized by AvaTax;
@@ -10543,6 +11304,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<PreferredProgramModel>> ListPreferredProgramsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all available product classification systems.;
         /// </summary>
@@ -10559,6 +11321,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="countryCode">If not null, return all records with this code.</param>
         Task<FetchResult<ProductClassificationSystemModel>> ListProductClassificationSystemsAsync(String filter, Int32? top, Int32? skip, String orderBy, String countryCode);
 
+
         /// <summary>
         /// List all product classification systems available to a company based on its nexus.;
         /// </summary>
@@ -10566,7 +11329,15 @@ namespace Avalara.AvaTax.RestClient
         /// Lists all product classification systems available to a company based on its nexus.
         ///  
         /// Tax authorities use product classification systems as a way to identify products and associate them with a tax rate.
-        /// More than one tax authority might use the same product classification system, but they might charge different tax rates for products.;
+        /// More than one tax authority might use the same product classification system, but they might charge different tax rates for products.
+        ///  
+        ///  
+        /// NOTE: If your company code contains any of these characters /, +, ? or a space, please use the following encoding before making a request:
+        /// * Replace '/' with '\_-ava2f-\_' For example: 'Company/Code' becomes 'Company_-ava2f-_Code'
+        /// * Replace '+' with '\_-ava2b-\_' For example: 'Company+Code' becomes 'Company_-ava2b-_Code'
+        /// * Replace '?' with '\_-ava3f-\_' For example: 'Company?Code' becomes 'Company_-ava3f-_Code'
+        /// * Replace '%' with '\_-ava25-\_' For example: 'Company%Code' becomes 'Company_-ava25-_Code'
+        /// * Replace '#' with '\_-ava23-\_' For example: 'Company#Code' becomes 'Company_-ava23-_Code';
         /// </remarks>
         /// <param name="companyCode">The company code.</param>
         /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* countries</param>
@@ -10575,6 +11346,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         /// <param name="countryCode">If not null, return all records with this code.</param>
         Task<FetchResult<ProductClassificationSystemModel>> ListProductClassificationSystemsByCompanyAsync(String companyCode, String filter, Int32? top, Int32? skip, String orderBy, String countryCode);
+
 
         /// <summary>
         /// Retrieve the full list of rate types for each country;
@@ -10590,6 +11362,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<RateTypeModel>> ListRateTypesByCountryAsync(String country, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all ISO 3166 regions;
         /// </summary>
@@ -10603,6 +11376,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<IsoRegionModel>> ListRegionsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// List all ISO 3166 regions for a country;
@@ -10619,6 +11393,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<IsoRegionModel>> ListRegionsByCountryAsync(String country, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported resource file types;
         /// </summary>
@@ -10631,6 +11406,22 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ResourceFileTypeModel>> ListResourceFileTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
+
+        /// <summary>
+        /// Retrieve the full list of Avalara-supported usage of parameters used for returns.;
+        /// </summary>
+        /// <remarks>
+        /// Returns the full list of Avalara-supported usage of extra parameters for the returns.
+        /// This list of parameters is available for use with Returns.
+        /// Some parameters are only available for use if you have subscribed to certain features of AvaTax.;
+        /// </remarks>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* values</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        Task<FetchResult<ReturnsParameterUsageModel>> ListReturnsParametersUsageAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported permissions;
@@ -10645,6 +11436,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SecurityRoleModel>> ListSecurityRolesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported subscription types;
@@ -10661,6 +11453,20 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SubscriptionTypeModel>> ListSubscriptionTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
+        /// <summary>
+        /// Retrieve the list all tags supported by avalara;
+        /// </summary>
+        /// <remarks>
+        /// Retrieves the list of suggested locations for a marketplace.;
+        /// </remarks>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        Task<FetchResult<TagsModel>> ListTagsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax authorities.;
         /// </summary>
@@ -10673,6 +11479,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxAuthorityModel>> ListTaxAuthoritiesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported forms for each tax authority.;
@@ -10689,6 +11496,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxAuthorityFormModel>> ListTaxAuthorityFormsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax authority types.;
         /// </summary>
@@ -10701,6 +11509,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxAuthorityTypeModel>> ListTaxAuthorityTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax codes.;
@@ -10722,6 +11531,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxCodeModel>> ListTaxCodesAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of Avalara-supported tax code types.;
         /// </summary>
@@ -10733,6 +11543,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         Task<TaxCodeTypesModel> ListTaxCodeTypesAsync(Int32? top, Int32? skip);
+
 
         /// <summary>
         /// Retrieve the full list of the Tax Forms available;
@@ -10747,6 +11558,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<FormMasterModel>> ListTaxFormsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve the full list of tax sub types;
         /// </summary>
@@ -10759,6 +11571,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxSubTypeModel>> ListTaxSubTypesAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve the full list of tax type groups;
@@ -10773,6 +11586,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxTypeGroupModel>> ListTaxTypeGroupsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// List all defined units of measurement;
         /// </summary>
@@ -10786,6 +11600,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<UomModel>> ListUnitOfMeasurementAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Create one or more DistanceThreshold objects;
@@ -10805,6 +11620,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The DistanceThreshold object or objects you wish to create.</param>
         Task<List<CompanyDistanceThresholdModel>> CreateDistanceThresholdAsync(Int32 companyId, List<CompanyDistanceThresholdModel> model);
 
+
         /// <summary>
         /// Delete a single DistanceThreshold object;
         /// </summary>
@@ -10823,6 +11639,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of the DistanceThreshold object you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteDistanceThresholdAsync(Int32 companyId, Int64 id);
 
+
         /// <summary>
         /// Retrieve a single DistanceThreshold;
         /// </summary>
@@ -10840,6 +11657,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this DistanceThreshold object</param>
         /// <param name="id">The unique ID number referring to this DistanceThreshold object</param>
         Task<CompanyDistanceThresholdModel> GetDistanceThresholdAsync(Int32 companyId, Int64 id);
+
 
         /// <summary>
         /// Retrieve all DistanceThresholds for this company.;
@@ -10862,6 +11680,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CompanyDistanceThresholdModel>> ListDistanceThresholdsAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all DistanceThreshold objects;
@@ -10887,6 +11706,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<CompanyDistanceThresholdModel>> QueryDistanceThresholdsAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a DistanceThreshold object;
         /// </summary>
@@ -10909,6 +11729,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The new DistanceThreshold object to store.</param>
         Task<CompanyDistanceThresholdModel> UpdateDistanceThresholdAsync(Int32 companyId, Int64 id, CompanyDistanceThresholdModel model);
 
+
         /// <summary>
         /// Create a new eCommerce token.;
         /// </summary>
@@ -10924,6 +11745,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The company ID that will be issued this certificate.</param>
         /// <param name="model"></param>
         Task<ECommerceTokenOutputModel> CreateECommerceTokenAsync(Int32 companyId, CreateECommerceTokenInputModel model);
+
 
         /// <summary>
         /// Refresh an eCommerce token.;
@@ -10941,6 +11763,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model"></param>
         Task<FetchResult<ECommerceTokenOutputModel>> RefreshECommerceTokenAsync(Int32 companyId, RefreshECommerceTokenInputModel model);
 
+
         /// <summary>
         /// Add or Edit options;
         /// </summary>
@@ -10957,6 +11780,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Cycle Safe Options Request</param>
         Task<CycleSafeOptionResultModel> CycleSafeOptionsAsync(Int32 companyId, CycleSafeEditRequestModel model);
 
+
         /// <summary>
         /// Delete a company return setting;
         /// </summary>
@@ -10972,6 +11796,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyReturnSettingId">The unique ID of the company return setting that will be deleted from the filing calendar</param>
         Task<List<CompanyReturnSettingModel>> DeleteCompanyReturnSettingsAsync(Int32 companyId, Int32 filingCalendarId, Int64 companyReturnSettingId);
 
+
         /// <summary>
         /// Retrieve a filing containing the return and all its accrual returns.;
         /// </summary>
@@ -10983,6 +11808,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns these returns</param>
         /// <param name="filingReturnId">The ID of the filing return</param>
         Task<FetchResult<MultiTaxFilingModel>> GetAccrualFilingsAsync(Int32 companyId, Int64 filingReturnId);
+
 
         /// <summary>
         /// Retrieve a list of filed returns for the specified company in the year and month of a given filing period.;
@@ -11005,6 +11831,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="taxformCode">The unique tax form code of the form.</param>
         Task<FetchResult<FiledReturnModel>> GetFiledReturnsAsync(Int32 companyId, Int32? endPeriodMonth, Int32? endPeriodYear, FilingFrequencyId? frequency, FilingStatusId? status, String country, String region, Int64? filingCalendarId, String taxformCode);
 
+
         /// <summary>
         /// Approves linkage to a firm for a client account;
         /// </summary>
@@ -11017,6 +11844,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         Task<FirmClientLinkageOutputModel> ApproveFirmClientLinkageAsync(Int32 id);
+
 
         /// <summary>
         /// Request a new FirmClient account and create an approved linkage to it;
@@ -11040,6 +11868,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the account you wish to create.</param>
         Task<FirmClientLinkageOutputModel> CreateAndLinkNewFirmClientAccountAsync(NewFirmClientAccountRequestModel model);
 
+
         /// <summary>
         /// Links a firm account with the client account;
         /// </summary>
@@ -11052,6 +11881,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">FirmClientLinkageInputModel</param>
         Task<FirmClientLinkageOutputModel> CreateFirmClientLinkageAsync(FirmClientLinkageInputModel model);
+
 
         /// <summary>
         /// Delete a linkage;
@@ -11066,6 +11896,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         Task<List<ErrorDetail>> DeleteFirmClientLinkageAsync(Int32 id);
 
+
         /// <summary>
         /// Get linkage between a firm and client by id;
         /// </summary>
@@ -11078,6 +11909,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         Task<FirmClientLinkageOutputModel> GetFirmClientLinkageAsync(Int32 id);
+
 
         /// <summary>
         /// List client linkages for a firm or client;
@@ -11092,6 +11924,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* firmAccountName, clientAccountName</param>
         Task<FetchResult<FirmClientLinkageOutputModel>> ListFirmClientLinkageAsync(String filter);
 
+
         /// <summary>
         /// Rejects linkage to a firm for a client account;
         /// </summary>
@@ -11104,6 +11937,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         Task<FirmClientLinkageOutputModel> RejectFirmClientLinkageAsync(Int32 id);
+
 
         /// <summary>
         /// Reset linkage status between a client and firm back to requested;
@@ -11118,6 +11952,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id"></param>
         Task<FirmClientLinkageOutputModel> ResetFirmClientLinkageAsync(Int32 id);
 
+
         /// <summary>
         /// Revokes previously approved linkage to a firm for a client account;
         /// </summary>
@@ -11130,6 +11965,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id"></param>
         Task<FirmClientLinkageOutputModel> RevokeFirmClientLinkageAsync(Int32 id);
+
 
         /// <summary>
         /// FREE API - Request a free trial of AvaTax;
@@ -11152,6 +11988,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Required information to provision a free trial account.</param>
         Task<NewAccountModel> RequestFreeTrialAsync(FreeTrialRequestModel model);
+
 
         /// <summary>
         /// Request the javascript for a funding setup widget;
@@ -11178,6 +12015,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this funding request</param>
         Task<FundingStatusModel> ActivateFundingRequestAsync(Int64 id);
 
+
         /// <summary>
         /// Retrieve status about a funding setup request;
         /// </summary>
@@ -11201,6 +12039,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of this funding request</param>
         Task<FundingStatusModel> FundingRequestStatusAsync(Int32 id);
 
+
         /// <summary>
         /// Delete all classifications for an item;
         /// </summary>
@@ -11218,6 +12057,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this item.</param>
         /// <param name="itemId">The ID of the item you wish to delete the classifications.</param>
         Task<List<ErrorDetail>> BatchDeleteItemClassificationsAsync(Int32 companyId, Int64 itemId);
+
 
         /// <summary>
         /// Delete all parameters for an item;
@@ -11239,6 +12079,30 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The ID of the item you wish to delete the parameters.</param>
         Task<List<ErrorDetail>> BatchDeleteItemParametersAsync(Int32 companyId, Int64 itemId);
 
+
+        /// <summary>
+        /// Bulk upload items from a product catalog;
+        /// </summary>
+        /// <remarks>
+        /// Create/Update one or more item objects attached to this company.
+        ///  
+        /// Items are a way of separating your tax calculation process from your tax configuration details. If you choose, you
+        /// can provide `itemCode` values for each `CreateTransaction()` API call rather than specifying tax codes, parameters, descriptions,
+        /// and other data fields. AvaTax will automatically look up each `itemCode` and apply the correct tax codes and parameters
+        /// from the item table instead. This allows your CreateTransaction call to be as simple as possible, and your tax compliance
+        /// team can manage your item catalog and adjust the tax behavior of items without having to modify your software.
+        ///  
+        /// The tax code takes precedence over the tax code id if both are provided.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.;
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that owns this items.</param>
+        /// <param name="model">The items you wish to upload.</param>
+        Task<ItemBulkUploadOutputModel> BulkUploadItemsAsync(Int32 companyId, ItemBulkUploadInputModel model);
+
+
         /// <summary>
         /// Add classifications to an item.;
         /// </summary>
@@ -11259,6 +12123,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id.</param>
         /// <param name="model">The item classifications you wish to create.</param>
         Task<List<ItemClassificationOutputModel>> CreateItemClassificationsAsync(Int32 companyId, Int64 itemId, List<ItemClassificationInputModel> model);
+
 
         /// <summary>
         /// Add parameters to an item.;
@@ -11285,6 +12150,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The item parameters you wish to create.</param>
         Task<List<ItemParameterModel>> CreateItemParametersAsync(Int32 companyId, Int64 itemId, List<ItemParameterModel> model);
 
+
         /// <summary>
         /// Create a new item;
         /// </summary>
@@ -11306,6 +12172,25 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this item.</param>
         /// <param name="model">The item you wish to create.</param>
         Task<List<ItemModel>> CreateItemsAsync(Int32 companyId, List<ItemModel> model);
+
+
+        /// <summary>
+        /// Create tags for a item;
+        /// </summary>
+        /// <remarks>
+        /// Creates one or more new `Tag` objects attached to this Item.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.;
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        /// <param name="model">Tags you wish to associate with the Item</param>
+        Task<List<ItemTagDetailModel>> CreateItemTagsAsync(Int32 companyId, Int32 itemId, List<ItemTagDetailModel> model);
+
 
         /// <summary>
         /// Delete a single item;
@@ -11329,6 +12214,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the item you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteItemAsync(Int32 companyId, Int64 id);
 
+
         /// <summary>
         /// Delete a single item classification.;
         /// </summary>
@@ -11347,6 +12233,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id.</param>
         /// <param name="id">The item classification id.</param>
         Task<List<ErrorDetail>> DeleteItemClassificationAsync(Int32 companyId, Int64 itemId, Int64 id);
+
 
         /// <summary>
         /// Delete a single item parameter;
@@ -11369,6 +12256,42 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The parameter id</param>
         Task<List<ErrorDetail>> DeleteItemParameterAsync(Int32 companyId, Int64 itemId, Int64 id);
 
+
+        /// <summary>
+        /// Delete item tag by id;
+        /// </summary>
+        /// <remarks>
+        /// Deletes the `Tag` object of an Item at this URL.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.;
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        /// <param name="itemTagDetailId">The ID of the item tag detail you wish to delete.</param>
+        Task<List<ErrorDetail>> DeleteItemTagAsync(Int32 companyId, Int64 itemId, Int32 itemTagDetailId);
+
+
+        /// <summary>
+        /// Delete all item tags;
+        /// </summary>
+        /// <remarks>
+        /// Deletes all `Tags` objects of an Item at this URL.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, CSPTester, SSTAdmin, TechnicalSupportAdmin.;
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items.</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        Task<List<ErrorDetail>> DeleteItemTagsAsync(Int32 companyId, Int64 itemId);
+
+
         /// <summary>
         /// Retrieve a single item;
         /// </summary>
@@ -11390,6 +12313,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         Task<ItemModel> GetItemAsync(Int32 companyId, Int64 id, String include);
 
+
         /// <summary>
         /// Retrieve a single item classification.;
         /// </summary>
@@ -11408,6 +12332,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id.</param>
         /// <param name="id">The item classification id.</param>
         Task<ItemClassificationOutputModel> GetItemClassificationAsync(Int32 companyId, Int64 itemId, Int64 id);
+
 
         /// <summary>
         /// Retrieve a single item parameter;
@@ -11429,6 +12354,27 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="itemId">The item id</param>
         /// <param name="id">The parameter id</param>
         Task<ItemParameterModel> GetItemParameterAsync(Int32 companyId, Int64 itemId, Int64 id);
+
+
+        /// <summary>
+        /// Retrieve tags for an item;
+        /// </summary>
+        /// <remarks>
+        /// Get the `Tag` objects of an Item identified by this URL.
+        ///  
+        /// Item tags puts multiple labels for an item. So that item can be easily grouped by these tags.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.;
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items</param>
+        /// <param name="itemId">The ID of the item as defined by the company that owns this tag.</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* tagName</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        Task<FetchResult<ItemTagDetailModel>> GetItemTagsAsync(Int32 companyId, Int64 itemId, String filter, Int32? top, Int32? skip);
+
 
         /// <summary>
         /// Retrieve classifications for an item.;
@@ -11455,6 +12401,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ItemClassificationOutputModel>> ListItemClassificationsAsync(Int32 companyId, Int64 itemId, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve parameters for an item;
         /// </summary>
@@ -11476,11 +12423,12 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="companyId">The company id</param>
         /// <param name="itemId">The item id</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* name, unit</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* name, unit, isNeededForCalculation, isNeededForReturns, isNeededForClassification</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ItemParameterModel>> ListItemParametersAsync(Int32 companyId, Int64 itemId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve items for this company;
@@ -11508,12 +12456,13 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.;
         /// </remarks>
         /// <param name="companyId">The ID of the company that defined these items</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters, tags</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ItemModel>> ListItemsByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all items;
@@ -11535,12 +12484,43 @@ namespace Avalara.AvaTax.RestClient
         /// 
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.;
         /// </remarks>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters, tags</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<ItemModel>> QueryItemsAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
+
+        /// <summary>
+        /// Retrieve all items associated with given tag;
+        /// </summary>
+        /// <remarks>
+        /// Get multiple item objects associated with given tag.
+        ///  
+        /// Items are a way of separating your tax calculation process from your tax configuration details. If you choose, you
+        /// can provide `itemCode` values for each `CreateTransaction()` API call rather than specifying tax codes, parameters, descriptions,
+        /// and other data fields. AvaTax will automatically look up each `itemCode` and apply the correct tax codes and parameters
+        /// from the item table instead. This allows your CreateTransaction call to be as simple as possible, and your tax compliance
+        /// team can manage your item catalog and adjust the tax behavior of items without having to modify your software.
+        ///  
+        /// Search for specific objects using the criteria in the `$filter` parameter; full documentation is available on [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/) .
+        ///  
+        /// Paginate your results using the `$top`, `$skip`, and `$orderby` parameters.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, CSPAdmin, CSPTester, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.;
+        /// </remarks>
+        /// <param name="companyId">The ID of the company that defined these items.</param>
+        /// <param name="tag">The master tag to be associated with item.</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* taxCode, classifications, parameters, tags</param>
+        /// <param name="include">A comma separated list of additional data to retrieve.</param>
+        /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
+        /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
+        /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
+        Task<FetchResult<ItemModel>> QueryItemsByTagAsync(Int32 companyId, String tag, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Sync items from a product catalog;
@@ -11566,6 +12546,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this item.</param>
         /// <param name="model">The request object.</param>
         Task<SyncItemsResponseModel> SyncItemsAsync(Int32 companyId, SyncItemsRequestModel model);
+
 
         /// <summary>
         /// Update a single item;
@@ -11593,6 +12574,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The item object you wish to update.</param>
         Task<ItemModel> UpdateItemAsync(Int32 companyId, Int64 id, ItemModel model);
 
+
         /// <summary>
         /// Update an item classification.;
         /// </summary>
@@ -11614,6 +12596,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The item classification id.</param>
         /// <param name="model">The item object you wish to update.</param>
         Task<ItemClassificationOutputModel> UpdateItemClassificationAsync(Int32 companyId, Int64 itemId, Int64 id, ItemClassificationInputModel model);
+
 
         /// <summary>
         /// Update an item parameter;
@@ -11637,6 +12620,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The item object you wish to update.</param>
         Task<ItemParameterModel> UpdateItemParameterAsync(Int32 companyId, Int64 itemId, Int64 id, ItemParameterModel model);
 
+
         /// <summary>
         /// Create one or more overrides;
         /// </summary>
@@ -11656,6 +12640,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The jurisdiction override objects to create</param>
         Task<List<JurisdictionOverrideModel>> CreateJurisdictionOverridesAsync(Int32 accountId, List<JurisdictionOverrideModel> model);
 
+
         /// <summary>
         /// Delete a single override;
         /// </summary>
@@ -11669,6 +12654,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this override</param>
         /// <param name="id">The ID of the override you wish to delete</param>
         Task<List<ErrorDetail>> DeleteJurisdictionOverrideAsync(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single override;
@@ -11688,6 +12674,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this override</param>
         /// <param name="id">The primary key of this override</param>
         Task<JurisdictionOverrideModel> GetJurisdictionOverrideAsync(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Retrieve overrides for this account;
@@ -11715,6 +12702,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<JurisdictionOverrideModel>> ListJurisdictionOverridesByAccountAsync(Int32 accountId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all overrides;
         /// </summary>
@@ -11740,6 +12728,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<JurisdictionOverrideModel>> QueryJurisdictionOverridesAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single jurisdictionoverride;
         /// </summary>
@@ -11754,6 +12743,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the jurisdictionoverride you wish to update</param>
         /// <param name="model">The jurisdictionoverride object you wish to update.</param>
         Task<JurisdictionOverrideModel> UpdateJurisdictionOverrideAsync(Int32 accountId, Int32 id, JurisdictionOverrideModel model);
+
 
         /// <summary>
         /// Add parameters to a location.;
@@ -11780,6 +12770,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The location parameters you wish to create.</param>
         Task<List<LocationParameterModel>> CreateLocationParametersAsync(Int32 companyId, Int32 locationId, List<LocationParameterModel> model);
 
+
         /// <summary>
         /// Create a new location;
         /// </summary>
@@ -11794,6 +12785,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The location you wish to create.</param>
         Task<List<LocationModel>> CreateLocationsAsync(Int32 companyId, List<LocationModel> model);
 
+
         /// <summary>
         /// Delete a single location;
         /// </summary>
@@ -11807,6 +12799,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this location.</param>
         /// <param name="id">The ID of the location you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteLocationAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Delete a single location parameter;
@@ -11828,6 +12821,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="locationId">The location id</param>
         /// <param name="id">The parameter id</param>
         Task<List<ErrorDetail>> DeleteLocationParameterAsync(Int32 companyId, Int32 locationId, Int64 id);
+
 
         /// <summary>
         /// Retrieve a single location;
@@ -11853,6 +12847,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         Task<LocationModel> GetLocationAsync(Int32 companyId, Int32 id, String include);
 
+
         /// <summary>
         /// Retrieve a single company location parameter;
         /// </summary>
@@ -11873,6 +12868,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="locationId">The location id</param>
         /// <param name="id">The parameter id</param>
         Task<LocationParameterModel> GetLocationParameterAsync(Int32 companyId, Int32 locationId, Int64 id);
+
 
         /// <summary>
         /// Retrieve parameters for a location;
@@ -11900,6 +12896,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<LocationParameterModel>> ListLocationParametersAsync(Int32 companyId, Int32 locationId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve locations for this company;
@@ -11930,6 +12927,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<LocationModel>> ListLocationsByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all locations;
         /// </summary>
@@ -11959,6 +12957,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<LocationModel>> QueryLocationsAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single location;
         /// </summary>
@@ -11975,6 +12974,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the location you wish to update</param>
         /// <param name="model">The location you wish to update.</param>
         Task<LocationModel> UpdateLocationAsync(Int32 companyId, Int32 id, LocationModel model);
+
 
         /// <summary>
         /// Update a location parameter;
@@ -11998,6 +12998,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The location parameter object you wish to update.</param>
         Task<LocationParameterModel> UpdateLocationParameterAsync(Int32 companyId, Int32 locationId, Int64 id, LocationParameterModel model);
 
+
         /// <summary>
         /// Validate the location against local requirements;
         /// </summary>
@@ -12013,6 +13014,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this location</param>
         /// <param name="id">The primary key of this location</param>
         Task<LocationValidationModel> ValidateLocationAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Adjust a MultiDocument transaction;
@@ -12047,6 +13049,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The adjust request you wish to execute</param>
         Task<MultiDocumentModel> AdjustMultiDocumentTransactionAsync(String code, DocumentType type, String include, AdjustMultiDocumentModel model);
+
 
         /// <summary>
         /// Get audit information about a MultiDocument transaction;
@@ -12084,6 +13087,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="type">The transaction type for this MultiDocument transaction</param>
         Task<AuditMultiDocumentModel> AuditMultiDocumentTransactionAsync(String code, DocumentType type);
 
+
         /// <summary>
         /// Commit a MultiDocument transaction;
         /// </summary>
@@ -12112,6 +13116,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">The commit request you wish to execute</param>
         Task<MultiDocumentModel> CommitMultiDocumentTransactionAsync(CommitMultiDocumentModel model);
+
 
         /// <summary>
         /// Create a new MultiDocument transaction;
@@ -12167,6 +13172,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">the multi document transaction model</param>
         Task<MultiDocumentModel> CreateMultiDocumentTransactionAsync(String include, CreateMultiDocumentModel model);
 
+
         /// <summary>
         /// Retrieve a MultiDocument transaction;
         /// </summary>
@@ -12201,6 +13207,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="type">The transaction type to retrieve</param>
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         Task<MultiDocumentModel> GetMultiDocumentTransactionByCodeAndTypeAsync(String code, DocumentType type, String include);
+
 
         /// <summary>
         /// Retrieve a MultiDocument transaction by ID;
@@ -12245,6 +13252,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         Task<MultiDocumentModel> GetMultiDocumentTransactionByIdAsync(Int64 id, String include);
 
+
         /// <summary>
         /// Retrieve all MultiDocument transactions;
         /// </summary>
@@ -12288,6 +13296,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<MultiDocumentModel>> ListMultiDocumentTransactionsAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Create a refund for a MultiDocument transaction;
@@ -12349,6 +13358,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the refund to create</param>
         Task<MultiDocumentModel> RefundMultiDocumentTransactionAsync(String code, DocumentType type, String include, RefundTransactionModel model);
 
+
         /// <summary>
         /// Verify a MultiDocument transaction;
         /// </summary>
@@ -12375,6 +13385,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Information from your accounting system to verify against this MultiDocument transaction as it is stored in AvaTax</param>
         Task<MultiDocumentModel> VerifyMultiDocumentTransactionAsync(VerifyMultiDocumentModel model);
+
 
         /// <summary>
         /// Void a MultiDocument transaction;
@@ -12408,6 +13419,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The void request you wish to execute</param>
         Task<MultiDocumentModel> VoidMultiDocumentTransactionAsync(String code, DocumentType type, VoidTransactionModel model);
 
+
         /// <summary>
         /// Create a new nexus;
         /// </summary>
@@ -12440,6 +13452,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The nexus you wish to create.</param>
         Task<List<NexusModel>> CreateNexusAsync(Int32 companyId, List<NexusModel> model);
 
+
         /// <summary>
         /// Add parameters to a nexus.;
         /// </summary>
@@ -12463,6 +13476,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="nexusId">The nexus id.</param>
         /// <param name="model">The nexus parameters you wish to create.</param>
         Task<List<NexusParameterDetailModel>> CreateNexusParametersAsync(Int32 companyId, Int32 nexusId, List<NexusParameterDetailModel> model);
+
 
         /// <summary>
         /// Creates nexus for a list of addresses.;
@@ -12492,6 +13506,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The nexus you wish to create.</param>
         Task<List<NexusByAddressModel>> DeclareNexusByAddressAsync(Int32 companyId, List<DeclareNexusByAddressModel> model);
 
+
         /// <summary>
         /// Delete a single nexus;
         /// </summary>
@@ -12514,6 +13529,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="cascadeDelete">If true, deletes all the child nexus if they exist along with parent nexus</param>
         Task<List<ErrorDetail>> DeleteNexusAsync(Int32 companyId, Int32 id, Boolean? cascadeDelete);
 
+
         /// <summary>
         /// Delete a single nexus parameter;
         /// </summary>
@@ -12534,6 +13550,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The parameter id</param>
         Task<List<ErrorDetail>> DeleteNexusParameterAsync(Int32 companyId, Int32 nexusId, Int64 id);
 
+
         /// <summary>
         /// Delete all parameters for an nexus;
         /// </summary>
@@ -12552,6 +13569,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this nexus.</param>
         /// <param name="nexusId">The ID of the nexus you wish to delete the parameters.</param>
         Task<List<ErrorDetail>> DeleteNexusParametersAsync(Int32 companyId, Int32 nexusId);
+
 
         /// <summary>
         /// Retrieve a single nexus;
@@ -12574,6 +13592,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The primary key of this nexus</param>
         /// <param name="include"></param>
         Task<NexusModel> GetNexusAsync(Int32 companyId, Int32 id, String include);
+
 
         /// <summary>
         /// List company nexus related to a tax form;
@@ -12601,6 +13620,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include"></param>
         Task<NexusByTaxFormModel> GetNexusByFormCodeAsync(Int32 companyId, String formCode, String include);
 
+
         /// <summary>
         /// Retrieve a single nexus parameter;
         /// </summary>
@@ -12620,6 +13640,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="nexusId">The nexus id</param>
         /// <param name="id">The parameter id</param>
         Task<NexusParameterDetailModel> GetNexusParameterAsync(Int32 companyId, Int32 nexusId, Int64 id);
+
 
         /// <summary>
         /// Retrieve nexus for this company;
@@ -12649,6 +13670,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusModel>> ListNexusByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve parameters for a nexus;
         /// </summary>
@@ -12674,6 +13696,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusParameterDetailModel>> ListNexusParametersAsync(Int32 companyId, Int32 nexusId, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all nexus;
@@ -12701,6 +13724,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NexusModel>> QueryNexusAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Update a single nexus;
@@ -12735,6 +13759,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The nexus object you wish to update.</param>
         Task<NexusModel> UpdateNexusAsync(Int32 companyId, Int32 id, NexusModel model);
 
+
         /// <summary>
         /// Update an nexus parameter;
         /// </summary>
@@ -12756,6 +13781,65 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The nexus parameter id</param>
         /// <param name="model">The nexus object you wish to update.</param>
         Task<NexusParameterDetailModel> UpdateNexusParameterAsync(Int32 companyId, Int32 nexusId, Int64 id, NexusParameterDetailModel model);
+
+
+        /// <summary>
+        /// Creates a new tax notice responsibility type.;
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
+        /// * This API depends on the following active services:*Returns* (at least one of): Mrs, MRSComplianceManager, AvaTaxCsp.*Firm Managed* (for accounts managed by a firm): ARA, ARAManaged.;
+        /// </remarks>
+        /// <param name="model">The responsibility type to create</param>
+        Task<NoticeResponsibilityModel> CreateNoticeResponsibilityTypeAsync(CreateNoticeResponsibilityTypeModel model);
+
+
+        /// <summary>
+        /// Creates a new tax notice root cause type.;
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.
+        /// * This API depends on the following active services:*Returns* (at least one of): Mrs, MRSComplianceManager, AvaTaxCsp.*Firm Managed* (for accounts managed by a firm): ARA, ARAManaged.;
+        /// </remarks>
+        /// <param name="model">The root cause type to create</param>
+        Task<NoticeRootCauseModel> CreateNoticeRootCauseTypeAsync(CreateNoticeRootCauseTypeModel model);
+
+
+        /// <summary>
+        /// Delete a tax notice responsibility type.;
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.;
+        /// </remarks>
+        /// <param name="responsibilityId">The unique ID of the responsibility type</param>
+        Task<List<ErrorDetail>> DeleteNoticeResponsibilityTypeAsync(Int32 responsibilityId);
+
+
+        /// <summary>
+        /// Delete a tax notice root cause type.;
+        /// </summary>
+        /// <remarks>
+        /// This API is available by invitation only and only available for users with Compliance admin access.
+        /// 
+        /// ### Security Policies
+        /// 
+        /// * This API requires one of the following user roles: AccountAdmin, CompanyAdmin, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPTester, FirmAdmin, FirmUser, SSTAdmin, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.;
+        /// </remarks>
+        /// <param name="rootCauseId">The unique ID of the root cause type</param>
+        Task<List<ErrorDetail>> DeleteNoticeRootCauseTypeAsync(Int32 rootCauseId);
+
 
         /// <summary>
         /// Mark a single notification as dismissed.;
@@ -12783,6 +13867,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the notification you wish to mark as dismissed.</param>
         Task<NotificationModel> DismissNotificationAsync(Int64 id);
 
+
         /// <summary>
         /// Retrieve a single notification.;
         /// </summary>
@@ -12802,6 +13887,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The id of the notification to retrieve.</param>
         Task<NotificationModel> GetNotificationAsync(Int64 id);
+
 
         /// <summary>
         /// List all notifications.;
@@ -12828,6 +13914,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<NotificationModel>> ListNotificationsAsync(String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Request a new Avalara account;
@@ -12857,6 +13944,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the account you wish to create and the selected product offerings.</param>
         Task<NewAccountModel> RequestNewAccountAsync(NewAccountRequestModel model);
 
+
         /// <summary>
         /// Request a new entitilement to an existing customer;
         /// </summary>
@@ -12874,6 +13962,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="offer">The offer to be added to an already existing customer</param>
         Task<OfferModel> RequestNewEntitlementAsync(Int32 id, String offer);
 
+
         /// <summary>
         /// Create a new account;
         /// </summary>
@@ -12890,6 +13979,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">The account you wish to create.</param>
         Task<List<AccountModel>> CreateAccountAsync(AccountModel model);
+
 
         /// <summary>
         /// Create new notifications.;
@@ -12917,6 +14007,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The notifications you wish to create.</param>
         Task<List<NotificationModel>> CreateNotificationsAsync(List<NotificationModel> model);
 
+
         /// <summary>
         /// Create a new subscription;
         /// </summary>
@@ -12935,6 +14026,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The subscription you wish to create.</param>
         Task<List<SubscriptionModel>> CreateSubscriptionsAsync(Int32 accountId, List<SubscriptionModel> model);
 
+
         /// <summary>
         /// Delete a single account;
         /// </summary>
@@ -12951,6 +14043,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The ID of the account you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteAccountAsync(Int32 id);
+
 
         /// <summary>
         /// Delete a single notification.;
@@ -12975,6 +14068,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The id of the notification you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteNotificationAsync(Int64 id);
 
+
         /// <summary>
         /// Delete a single subscription;
         /// </summary>
@@ -12991,6 +14085,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this subscription.</param>
         /// <param name="id">The ID of the subscription you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteSubscriptionAsync(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Reset a user's password programmatically;
@@ -13013,6 +14108,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The new password for this user</param>
         Task<String> ResetPasswordAsync(Int32 userId, Boolean? unmigrateFromAi, SetPasswordModel model);
 
+
         /// <summary>
         /// Update a single account;
         /// </summary>
@@ -13029,6 +14125,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the account you wish to update.</param>
         /// <param name="model">The account object you wish to update.</param>
         Task<AccountModel> UpdateAccountAsync(Int32 id, AccountModel model);
+
 
         /// <summary>
         /// Update a single notification.;
@@ -13054,6 +14151,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The notification object you wish to update.</param>
         Task<NotificationModel> UpdateNotificationAsync(Int64 id, NotificationModel model);
 
+
         /// <summary>
         /// Update a single subscription;
         /// </summary>
@@ -13076,6 +14174,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The subscription you wish to update.</param>
         Task<SubscriptionModel> UpdateSubscriptionAsync(Int32 accountId, Int32 id, SubscriptionModel model);
 
+
         /// <summary>
         /// Download a report;
         /// </summary>
@@ -13093,7 +14192,7 @@ namespace Avalara.AvaTax.RestClient
         /// * Check the status of a report by calling `GetReport` and passing in the report's `id` value.
         /// * When a report's status is `Completed`, call `DownloadReport` to retrieve the file.
         ///  
-        /// This API works for all report types.
+        /// * We throttle this API. You can only call this API up to 5 times in a minute.
         /// 
         /// ### Security Policies
         /// 
@@ -13101,6 +14200,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The unique ID number of this report</param>
         Task<FileResult> DownloadReportAsync(Int64 id);
+
 
         /// <summary>
         /// Retrieve a single report;
@@ -13120,6 +14220,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="id">The unique ID number of the report to retrieve</param>
         Task<ReportModel> GetReportAsync(Int64 id);
+
 
         /// <summary>
         /// Initiate an ExportDocumentLine report task;
@@ -13154,6 +14255,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Options that may be configured to customize the report.</param>
         Task<List<ReportModel>> InitiateExportDocumentLineReportAsync(Int32 companyId, ExportDocumentLineModel model);
 
+
         /// <summary>
         /// List all report tasks for account;
         /// </summary>
@@ -13180,6 +14282,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         Task<FetchResult<ReportModel>> ListReportsAsync(Int32? companyId, String pageKey, Int32? skip, Int32? top);
 
+
         /// <summary>
         /// Create a new setting;
         /// </summary>
@@ -13194,6 +14297,11 @@ namespace Avalara.AvaTax.RestClient
         /// A setting can refer to any type of data you need to remember about this company object.
         /// When creating this object, you may define your own `set`, `name`, and `value` parameters.
         /// To define your own values, please choose a `set` name that begins with `X-` to indicate an extension.
+        ///  
+        /// Use Set = Transactions, Name = TaxCodePrioritization/HSCodePrioritization and Value = Transaction/ItemMaster for prioritizing which TaxCodes/HsCodes should be used for calculating taxes.
+        ///  
+        /// Example: To prioritize TaxCodes passed in a Transaction over values stored with Items when calculating tax, use
+        /// Set = Transactions, Name = TaxCodePrioritization, Value = Transaction
         /// 
         /// ### Security Policies
         /// 
@@ -13202,6 +14310,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this setting.</param>
         /// <param name="model">The setting you wish to create.</param>
         Task<List<SettingModel>> CreateSettingsAsync(Int32 companyId, List<SettingModel> model);
+
 
         /// <summary>
         /// Delete a single setting;
@@ -13226,6 +14335,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the setting you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteSettingAsync(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Retrieve a single setting;
         /// </summary>
@@ -13248,6 +14358,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this setting</param>
         /// <param name="id">The primary key of this setting</param>
         Task<SettingModel> GetSettingAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve all settings for this company;
@@ -13272,12 +14383,13 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.;
         /// </remarks>
         /// <param name="companyId">The ID of the company that owns these settings</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* modifiedDate, ModifiedUserId</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SettingModel>> ListSettingsByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all settings;
@@ -13301,12 +14413,13 @@ namespace Avalara.AvaTax.RestClient
         /// 
         /// * This API requires one of the following user roles: AccountAdmin, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, SiteAdmin, SSTAdmin, SystemAdmin, TechnicalSupportAdmin, TechnicalSupportUser.;
         /// </remarks>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* modifiedDate, ModifiedUserId</param>
         /// <param name="include">A comma separated list of additional data to retrieve.</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SettingModel>> QuerySettingsAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Update a single setting;
@@ -13336,6 +14449,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The setting you wish to update.</param>
         Task<SettingModel> UpdateSettingAsync(Int32 companyId, Int32 id, SettingModel model);
 
+
         /// <summary>
         /// Retrieve a single subscription;
         /// </summary>
@@ -13351,6 +14465,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The ID of the account that owns this subscription</param>
         /// <param name="id">The primary key of this subscription</param>
         Task<SubscriptionModel> GetSubscriptionAsync(Int32 accountId, Int32 id);
+
 
         /// <summary>
         /// Retrieve subscriptions for this account;
@@ -13374,6 +14489,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SubscriptionModel>> ListSubscriptionsByAccountAsync(Int32 accountId, String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all subscriptions;
         /// </summary>
@@ -13395,6 +14511,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<SubscriptionModel>> QuerySubscriptionsAsync(String filter, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Create a new tax code;
         /// </summary>
@@ -13413,6 +14530,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The tax code you wish to create.</param>
         Task<List<TaxCodeModel>> CreateTaxCodesAsync(Int32 companyId, List<TaxCodeModel> model);
 
+
         /// <summary>
         /// Delete a single tax code;
         /// </summary>
@@ -13426,6 +14544,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax code.</param>
         /// <param name="id">The ID of the tax code you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteTaxCodeAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single tax code;
@@ -13444,6 +14563,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax code</param>
         /// <param name="id">The primary key of this tax code</param>
         Task<TaxCodeModel> GetTaxCodeAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve tax codes for this company;
@@ -13470,6 +14590,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxCodeModel>> ListTaxCodesByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all tax codes;
         /// </summary>
@@ -13494,6 +14615,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxCodeModel>> QueryTaxCodesAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single tax code;
         /// </summary>
@@ -13514,6 +14636,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the tax code you wish to update</param>
         /// <param name="model">The tax code you wish to update.</param>
         Task<TaxCodeModel> UpdateTaxCodeAsync(Int32 companyId, Int32 id, TaxCodeModel model);
+
 
         /// <summary>
         /// Build a multi-location tax content file;
@@ -13550,6 +14673,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">Parameters about the desired file format and report format, specifying which company, locations and TaxCodes to include.</param>
         Task<FileResult> BuildTaxContentFileAsync(PointOfSaleDataRequestModel model);
+
 
         /// <summary>
         /// Build a tax content file for a single location;
@@ -13591,6 +14715,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="partnerId">If specified, requests a custom partner-formatted version of the file.</param>
         /// <param name="includeJurisCodes">When true, the file will include jurisdiction codes in the result.</param>
         Task<FileResult> BuildTaxContentFileForLocationAsync(Int32 companyId, Int32 id, DateTime? date, PointOfSaleFileType? format, PointOfSalePartnerId? partnerId, Boolean? includeJurisCodes);
+
 
         /// <summary>
         /// Download a file listing tax rates by postal code;
@@ -13645,6 +14770,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="region">A two character region code which limits results to a specific region.</param>
         Task<FileResult> DownloadTaxRatesByZipCodeAsync(DateTime date, String region);
 
+
         /// <summary>
         /// Sales tax rates for a specified address;
         /// </summary>
@@ -13694,6 +14820,7 @@ namespace Avalara.AvaTax.RestClient
         /// For a full list of all supported codes and names, please see the Definitions API `ListCountries`.</param>
         Task<TaxRateModel> TaxRatesByAddressAsync(String line1, String line2, String line3, String city, String region, String postalCode, String country);
 
+
         /// <summary>
         /// Sales tax rates for a specified country and postal code. This API is only available for US postal codes.;
         /// </summary>
@@ -13733,6 +14860,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="postalCode">The postal code of the location.</param>
         Task<TaxRateModel> TaxRatesByPostalCodeAsync(String country, String postalCode);
 
+
         /// <summary>
         /// Create a new tax rule;
         /// </summary>
@@ -13758,6 +14886,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax rule.</param>
         /// <param name="model">The tax rule you wish to create.</param>
         Task<List<TaxRuleModel>> CreateTaxRulesAsync(Int32 companyId, List<TaxRuleModel> model);
+
 
         /// <summary>
         /// Delete a single tax rule;
@@ -13785,6 +14914,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the tax rule you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteTaxRuleAsync(Int32 companyId, Int32 id);
 
+
         /// <summary>
         /// Retrieve a single tax rule;
         /// </summary>
@@ -13810,6 +14940,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this tax rule</param>
         /// <param name="id">The primary key of this tax rule</param>
         Task<TaxRuleModel> GetTaxRuleAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve tax rules for this company;
@@ -13844,6 +14975,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxRuleModel>> ListTaxRulesAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all tax rules;
         /// </summary>
@@ -13876,6 +15008,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TaxRuleModel>> QueryTaxRulesAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single tax rule;
         /// </summary>
@@ -13902,6 +15035,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the tax rule you wish to update</param>
         /// <param name="model">The tax rule you wish to update.</param>
         Task<TaxRuleModel> UpdateTaxRuleAsync(Int32 companyId, Int32 id, TaxRuleModel model);
+
 
         /// <summary>
         /// Add lines to an existing unlocked transaction;
@@ -13936,6 +15070,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         /// <param name="model">information about the transaction and lines to be added</param>
         Task<TransactionModel> AddLinesAsync(String include, AddTransactionLineModel model);
+
 
         /// <summary>
         /// Correct a previously created transaction;
@@ -13983,6 +15118,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The adjustment you wish to make</param>
         Task<TransactionModel> AdjustTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, AdjustTransactionModel model);
 
+
         /// <summary>
         /// Get audit information about a transaction;
         /// </summary>
@@ -14019,6 +15155,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyCode">The code identifying the company that owns this transaction</param>
         /// <param name="transactionCode">The code identifying the transaction</param>
         Task<AuditTransactionModel> AuditTransactionAsync(String companyCode, String transactionCode);
+
 
         /// <summary>
         /// Get audit information about a transaction;
@@ -14058,6 +15195,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="documentType">The document type of the original transaction</param>
         Task<AuditTransactionModel> AuditTransactionWithTypeAsync(String companyCode, String transactionCode, DocumentType documentType);
 
+
         /// <summary>
         /// Lock a set of documents;
         /// </summary>
@@ -14077,6 +15215,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">bulk lock request</param>
         Task<BulkLockTransactionResult> BulkLockTransactionAsync(BulkLockTransactionModel model);
+
 
         /// <summary>
         /// Change a transaction's code;
@@ -14124,6 +15263,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The code change request you wish to execute</param>
         Task<TransactionModel> ChangeTransactionCodeAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, ChangeTransactionCodeModel model);
 
+
         /// <summary>
         /// Commit a transaction for reporting;
         /// </summary>
@@ -14167,6 +15307,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The commit request you wish to execute</param>
         Task<TransactionModel> CommitTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, CommitTransactionModel model);
+
 
         /// <summary>
         /// Create or adjust a transaction;
@@ -14214,6 +15355,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         /// <param name="model">The transaction you wish to create or adjust</param>
         Task<TransactionModel> CreateOrAdjustTransactionAsync(String include, CreateOrAdjustTransactionModel model);
+
 
         /// <summary>
         /// Create a new transaction;
@@ -14269,6 +15411,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The transaction you wish to create</param>
         Task<TransactionModel> CreateTransactionAsync(String include, CreateTransactionModel model);
 
+
         /// <summary>
         /// Remove lines from an existing unlocked transaction;
         /// </summary>
@@ -14299,6 +15442,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in the response after transaction is created</param>
         /// <param name="model">information about the transaction and lines to be removed</param>
         Task<TransactionModel> DeleteLinesAsync(String include, RemoveTransactionLineModel model);
+
 
         /// <summary>
         /// Retrieve a single transaction by code;
@@ -14342,6 +15486,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         Task<TransactionModel> GetTransactionByCodeAsync(String companyCode, String transactionCode, DocumentType? documentType, String include);
 
+
         /// <summary>
         /// Retrieve a single transaction by code;
         /// </summary>
@@ -14366,6 +15511,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="documentType">The transaction type to retrieve</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
         Task<TransactionModel> GetTransactionByCodeAndTypeAsync(String companyCode, String transactionCode, DocumentType documentType, String include);
+
 
         /// <summary>
         /// Retrieve a single transaction by ID;
@@ -14397,6 +15543,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The unique ID number of the transaction to retrieve</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
         Task<TransactionModel> GetTransactionByIdAsync(Int64 id, String include);
+
 
         /// <summary>
         /// Retrieve all transactions;
@@ -14440,11 +15587,12 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyCode">The company code of the company that recorded this transaction</param>
         /// <param name="dataSourceId">Optionally filter transactions to those from a specific data source.</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* exchangeRateCurrencyCode, totalDiscount, lines, addresses, locationTypes, summary, taxDetailsByTaxType, parameters, messages, invoiceMessages, isFakeTransaction</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* exchangeRateCurrencyCode, totalDiscount, lines, addresses, locationTypes, summary, taxDetailsByTaxType, parameters, userDefinedFields, messages, invoiceMessages, isFakeTransaction, deliveryTerms</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<TransactionModel>> ListTransactionsByCompanyAsync(String companyCode, Int32? dataSourceId, String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Lock a single transaction;
@@ -14491,6 +15639,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The lock request you wish to execute</param>
         Task<TransactionModel> LockTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, LockTransactionModel model);
+
 
         /// <summary>
         /// Create a refund for a transaction;
@@ -14549,6 +15698,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">Information about the refund to create</param>
         Task<TransactionModel> RefundTransactionAsync(String companyCode, String transactionCode, String include, DocumentType? documentType, Boolean? useTaxDateOverride, RefundTransactionModel model);
 
+
         /// <summary>
         /// Perform multiple actions on a transaction;
         /// </summary>
@@ -14593,6 +15743,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The data from an external system to reconcile against AvaTax</param>
         Task<TransactionModel> SettleTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, SettleTransactionModel model);
 
+
         /// <summary>
         /// Uncommit a transaction for reporting;
         /// </summary>
@@ -14631,6 +15782,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         Task<TransactionModel> UncommitTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include);
 
+
         /// <summary>
         /// Unvoids a transaction;
         /// </summary>
@@ -14665,6 +15817,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="documentType">(Optional): The document type of the transaction to commit. If not provided, the default is SalesInvoice.</param>
         /// <param name="include">Specifies objects to include in this fetch call</param>
         Task<TransactionModel> UnvoidTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include);
+
 
         /// <summary>
         /// Verify a transaction;
@@ -14708,6 +15861,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="include">Specifies objects to include in this fetch call</param>
         /// <param name="model">The data from an external system to reconcile against AvaTax</param>
         Task<TransactionModel> VerifyTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, VerifyTransactionModel model);
+
 
         /// <summary>
         /// Void a transaction;
@@ -14754,6 +15908,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The void request you wish to execute. To void a transaction the code must be set to 'DocVoided'</param>
         Task<TransactionModel> VoidTransactionAsync(String companyCode, String transactionCode, DocumentType? documentType, String include, VoidTransactionModel model);
 
+
         /// <summary>
         /// Create a new UPC;
         /// </summary>
@@ -14770,6 +15925,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The UPC you wish to create.</param>
         Task<List<UPCModel>> CreateUPCsAsync(Int32 companyId, List<UPCModel> model);
 
+
         /// <summary>
         /// Delete a single UPC;
         /// </summary>
@@ -14784,6 +15940,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this UPC.</param>
         /// <param name="id">The ID of the UPC you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteUPCAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve a single UPC;
@@ -14800,6 +15957,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="companyId">The ID of the company that owns this UPC</param>
         /// <param name="id">The primary key of this UPC</param>
         Task<UPCModel> GetUPCAsync(Int32 companyId, Int32 id);
+
 
         /// <summary>
         /// Retrieve UPCs for this company;
@@ -14824,6 +15982,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<UPCModel>> ListUPCsByCompanyAsync(Int32 companyId, String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Retrieve all UPCs;
         /// </summary>
@@ -14846,6 +16005,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<UPCModel>> QueryUPCsAsync(String filter, String include, Int32? top, Int32? skip, String orderBy);
 
+
         /// <summary>
         /// Update a single UPC;
         /// </summary>
@@ -14865,6 +16025,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The UPC you wish to update.</param>
         Task<UPCModel> UpdateUPCAsync(Int32 companyId, Int32 id, UPCModel model);
 
+
         /// <summary>
         /// Change Password;
         /// </summary>
@@ -14883,6 +16044,7 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="model">An object containing your current password and the new password.</param>
         Task<String> ChangePasswordAsync(PasswordChangeModel model);
+
 
         /// <summary>
         /// Create new users;
@@ -14906,6 +16068,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The user or array of users you wish to create.</param>
         Task<List<UserModel>> CreateUsersAsync(Int32 accountId, List<UserModel> model);
 
+
         /// <summary>
         /// Delete a single user;
         /// </summary>
@@ -14924,6 +16087,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="id">The ID of the user you wish to delete.</param>
         /// <param name="accountId">The accountID of the user you wish to delete.</param>
         Task<List<ErrorDetail>> DeleteUserAsync(Int32 id, Int32 accountId);
+
 
         /// <summary>
         /// Retrieve a single user;
@@ -14944,6 +16108,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The accountID of the user you wish to get.</param>
         /// <param name="include">Optional fetch commands.</param>
         Task<UserModel> GetUserAsync(Int32 id, Int32 accountId, String include);
+
 
         /// <summary>
         /// Retrieve all entitlements for a single user;
@@ -14973,6 +16138,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="accountId">The accountID of the user you wish to get.</param>
         Task<UserEntitlementModel> GetUserEntitlementsAsync(Int32 id, Int32 accountId);
 
+
         /// <summary>
         /// Retrieve users for this account;
         /// </summary>
@@ -14996,11 +16162,12 @@ namespace Avalara.AvaTax.RestClient
         /// </remarks>
         /// <param name="accountId">The accountID of the user you wish to list.</param>
         /// <param name="include">Optional fetch commands.</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* SuppressNewUserEmail</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<UserModel>> ListUsersByAccountAsync(Int32 accountId, String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Retrieve all users;
@@ -15026,11 +16193,12 @@ namespace Avalara.AvaTax.RestClient
         /// * This API requires one of the following user roles: AccountAdmin, AccountOperator, AccountUser, CompanyAdmin, CompanyUser, Compliance Root User, ComplianceAdmin, ComplianceUser, CSPAdmin, CSPTester, FirmAdmin, FirmUser, ProStoresOperator, Registrar, SiteAdmin, SSTAdmin, SystemAdmin, SystemOperator, TechnicalSupportAdmin, TechnicalSupportUser, TreasuryAdmin, TreasuryUser.;
         /// </remarks>
         /// <param name="include">Optional fetch commands.</param>
-        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).</param>
+        /// <param name="filter">A filter statement to identify specific records to retrieve. For more information on filtering, see [Filtering in REST](http://developer.avalara.com/avatax/filtering-in-rest/).<br />*Not filterable:* SuppressNewUserEmail</param>
         /// <param name="top">If nonzero, return no more than this number of results. Used with `$skip` to provide pagination for large datasets. Unless otherwise specified, the maximum number of records that can be returned from an API call is 1,000 records.</param>
         /// <param name="skip">If nonzero, skip this number of results before returning data. Used with `$top` to provide pagination for large datasets.</param>
         /// <param name="orderBy">A comma separated list of sort statements in the format `(fieldname) [ASC|DESC]`, for example `id ASC`.</param>
         Task<FetchResult<UserModel>> QueryUsersAsync(String include, String filter, Int32? top, Int32? skip, String orderBy);
+
 
         /// <summary>
         /// Update a single user;
@@ -15050,6 +16218,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="model">The user object you wish to update.</param>
         Task<UserModel> UpdateUserAsync(Int32 id, Int32 accountId, UserModel model);
 
+
         /// <summary>
         /// Checks if the current user is subscribed to a specific service;
         /// </summary>
@@ -15066,6 +16235,7 @@ namespace Avalara.AvaTax.RestClient
         /// <param name="serviceTypeId">The service to check</param>
         Task<SubscriptionModel> GetMySubscriptionAsync(String serviceTypeId);
 
+
         /// <summary>
         /// List all services to which the current user is subscribed;
         /// </summary>
@@ -15080,6 +16250,7 @@ namespace Avalara.AvaTax.RestClient
         /// specific features of AvaTax.;
         /// </remarks>
         Task<FetchResult<SubscriptionModel>> ListMySubscriptionsAsync();
+
 
         /// <summary>
         /// Tests connectivity and version of the service;
@@ -15107,7 +16278,12 @@ namespace Avalara.AvaTax.RestClient
         /// * This API may be called without providing authentication credentials.;
         /// </remarks>
         Task<PingResultModel> PingAsync();
+
 #endif
         #endregion
-    }
-}
+
+        #endregion API
+
+    } // interface IAvaTaxClient
+
+} // namespace Avalara.AvaTax.RestClient
