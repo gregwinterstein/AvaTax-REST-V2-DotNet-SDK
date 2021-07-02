@@ -10,7 +10,7 @@ namespace Avalara.AvaTax.RestClient
     /// <summary>
     /// Public interface to AvaTax client
     /// </summary>
-    interface IAvaTaxClient
+    public interface IAvaTaxClient
     {
         #region Client
 
